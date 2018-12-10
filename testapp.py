@@ -36,7 +36,7 @@ class L2Switch(app_manager.RyuApp):
         # Datapath ID of the switch that has sent the message
         packet_id = msg.buffer_id
         switch_id = msg.datapath.id
-        print("I got a packetIn message (", packet_id, ") from switch: ", switch_id)
+        print("I got a packetIn message (", packet_id, ") from switch: ", switch_id, ". Message: \"", msg, "\"")
 
         # Input port of the packet
         in_port = msg.in_port
