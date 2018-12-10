@@ -38,19 +38,19 @@ class L2Switch(app_manager.RyuApp):
         switch_id = msg.datapath.id
         print("I got a packetIn message (", packet_id, ") from switch: ", switch_id)
 
-        # # Input port of the packet
-        # in_port = msg.in_port
-        #
-        # dp = msg.datapath
-        # ofp = dp.ofproto
-        # ofp_parser = dp.ofproto_parser
-        #
-        #
-        # actions = [ofp_parser.OFPActionOutput(1, 65535)]
-        # out = ofp_parser.OFPPacketOut(
-        #     # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
-        #     datapath=dp, buffer_id=switch_id, in_port=in_port, actions=actions)
-        # dp.send_msg(out)
+        # Input port of the packet
+        in_port = msg.in_port
+
+        dp = msg.datapath
+        ofp = dp.ofproto
+        ofp_parser = dp.ofproto_parser
+        port = self.choose_output_port(in_port, switch_id)
+
+        actions = [ofp_parser.OFPActionOutput(port, 65535)]
+        out = ofp_parser.OFPPacketOut(
+            # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
+            datapath=dp, buffer_id=switch_id, in_port=in_port, actions=actions)
+        dp.send_msg(out)
 
     #
     # @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -75,8 +75,8 @@ class L2Switch(app_manager.RyuApp):
     #     dp.send_msg(out)
 
     def choose_output_port(self, in_port, switch_id):  # ,switch ID
-        if in_port == 1:
-            return 2
-        else:
-            if in_port == 2:
-                return 1
+        if switch_id==1:
+            return self.forwarding_table['s1']['in_port='+in_port]
+        if switch_id==2:
+            return self.forwarding_table['s2']['in_port='+in_port]
+
