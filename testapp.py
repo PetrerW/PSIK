@@ -76,7 +76,7 @@ class L2Switch(app_manager.RyuApp):
 
     def choose_output_port(self, in_port, switch_id):  # ,switch ID
         if switch_id==1:
-            return self.forwarding_table['s1']['in_port='+in_port]
+            return self.forwarding_table['s1']['in_port='+str(in_port)]
         if switch_id==2:
-            return self.forwarding_table['s2']['in_port='+in_port]
+            return self.forwarding_table['s2']['in_port='+str(in_port)]
 
