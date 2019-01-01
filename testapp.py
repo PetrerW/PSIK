@@ -6,8 +6,7 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_0, ofproto_v1_3
 
 class L2Switch(app_manager.RyuApp):
-    # OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
-    OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
+    OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
     forwarding_table = {
         's1': {
             # out_port = 2
