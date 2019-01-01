@@ -46,11 +46,15 @@ class L2Switch(app_manager.RyuApp):
         ofp_parser = dp.ofproto_parser
         port = self.choose_output_port(in_port, switch_id)
 
-        # actions = [ofp_parser.OFPActionOutput(port, 65535)]
-        # out = ofp_parser.OFPPacketOut(
-        #     # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
-        #     datapath=dp, buffer_id=switch_id, in_port=in_port, actions=actions)
-        # dp.send_msg(out)
+        print("Chosen output port: ", port)
+
+        actions = [ofp_parser.OFPActionOutput(port, 65535)]
+        out = ofp_parser.OFPPacketOut(
+             # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
+             datapath=dp, buffer_id=packet_id, in_port=in_port, actions=actions)
+        print(out)
+        dp.send_msg(out)
+
 
     #
     # @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -79,4 +83,21 @@ class L2Switch(app_manager.RyuApp):
             return self.forwarding_table['s1']['in_port='+str(in_port)]
         if switch_id==2:
             return self.forwarding_table['s2']['in_port='+str(in_port)]
+
+    def send_features_request(self, datapath):
+        ofp_parser = datapath.ofproto_parser
+
+        req = ofp_parser.OFPFeaturesRequest(datapath)
+        datapath.send_msg(req)
+
+    @set_ev_cls(ofp_event.EventOFPSwitchFeatures, MAIN_DISPATCHER)
+    def switch_features_handler(self, ev):
+        msg = ev.msg
+
+        self.logger.debug('OFPSwitchFeatures received: '
+                          'datapath_id=0x%016x n_buffers=%d '
+                          'n_tables=%d auxiliary_id=%d '
+                          'capabilities=0x%08x',
+                          msg.datapath_id, msg.n_buffers, msg.n_tables,
+                          msg.auxiliary_id, msg.capabilities)
 
