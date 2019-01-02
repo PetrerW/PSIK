@@ -92,7 +92,7 @@ class IcmpResponder(app_manager.RyuApp):
         ofp_parser = dp.ofproto_parser
         # TODO port_no doesn't exist
         in_port = ofp_parser.OFPPort.name
-        print("in_port: ", in_port)
+        print("in_port: ",str(in_port))
         # output_port = self.choose_output_port(in_port, switch_id)
         # reason = self.get_reason(msg, ofp)
         
