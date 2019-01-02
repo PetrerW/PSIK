@@ -16,10 +16,29 @@ from ryu.lib.packet import icmp
 class IcmpResponder(app_manager.RyuApp):
     # OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
+    # forwarding_table = {
+    #     's1': {
+    #         # out_port = 2
+    #         'in_port=1': 2,
+    #         'in_port=2': 1,
+    #     },
+    #     's2': {
+    #         'in_port=2': 1,
+    #         'in_port=1': 2,
+    #     },
+    #     's3': {
+    #         'in_port=1': 2,
+    #         'in_port=2': 1,
+    #     },
+    #     's4': {
+    #         'in_port=1': 2,
+    #         'in_port=2': 1,
+    #     }
+    # }
     forwarding_table = {
         's1': {
             # out_port = 2
-            'in_port=1': 2,
+            'dst_mac=1': 2,
             'in_port=2': 1,
         },
         's2': {
