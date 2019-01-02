@@ -64,12 +64,12 @@ class IcmpResponder(app_manager.RyuApp):
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
         output_port = self.choose_output_port(in_port, switch_id)
-        reason = self.get_reason(msg)
+        reason = self.get_reason(msg, ofp)
         
-        print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason, "
+        print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason)
 
         if(output_port == -1):
-            print("Cannot determine outpu port for switch: ", switch_id, ", in_port: ", in_port)
+            print("Cannot determine the output port for switch: ", switch_id, ", in_port: ", in_port)
         else:
             print("Chosen output port: ", output_port)
 
@@ -157,10 +157,10 @@ class IcmpResponder(app_manager.RyuApp):
         else:
             return -1
 
-    def get_reason(self, msg):
+    def get_reason(self, msg, ofp):
+	
         if  msg.reason == ofp.OFPR_NO_MATCH:
-            reason = 'NO MATCH'
-            self.choose_fields(msg)        
+            reason = 'NO MATCH'        
         elif msg.reason == ofp.OFPR_ACTION:
             reason = 'ACTION'
         elif msg.reason == ofp.OFPR_INVALID_TTL:
