@@ -109,31 +109,37 @@ class IcmpResponder(app_manager.RyuApp):
         # TODO port_no doesn't exist
         in_port = ofp_parser.OFPPort.name
         print("in_port: ",str(in_port))
+        eth = pkt.get_protocol(ethernet.ethernet)
+        dst_mac = eth.dst
         # output_port = self.choose_output_port(in_port, switch_id)
+        # TODO: Decision about offloading
+        output_port = self.choose_output_port(dst_mac, switch_id, False)
         # reason = self.get_reason(msg, ofp)
         
         # print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason)
 
         # if(output_port == -1):
         #     print("Cannot determine the output port for switch: ", switch_id, ", in_port: ", in_port)
-        # else:
-        #     print("Chosen output port: ", output_port)
+        if(output_port == -1):
+            print("Cannot determine the output port for switch: ", switch_id, ", dst_mac: ", dst_mac)
+        else:
+            print("Chosen output port: ", output_port)
 
-        #     #TODO: Insert your match
+            #TODO: Insert your match
 
-        #     match = ofp_parser.OFPMatch(in_port=in_port)
-        #     actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
+            match = ofp_parser.OFPMatch(eth_dst=dst_mac)
+            actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
 
-        #     cookie = 0
-        #     command = ofp.OFPFC_ADD
-        #     idle_timeout = hard_timeout = 0
-        #     priority = 32768
-        #     # out_port = ofproto.OFPP_NONE
-        #     flags = 0
-        #     req = ofp_parser.OFPFlowMod(
-        #         dp, match, cookie, command, idle_timeout, hard_timeout,
-        #         priority, msg.buffer_id, output_port, flags, actions)
-        #     self.send_flow_mod(dp, req)
+            cookie = 0
+            command = ofp.OFPFC_ADD
+            idle_timeout = hard_timeout = 0
+            priority = 32768
+            # out_port = ofproto.OFPP_NONE
+            flags = 0
+            req = ofp_parser.OFPFlowMod(
+                dp, match, cookie, command, idle_timeout, hard_timeout,
+                priority, msg.buffer_id, output_port, flags, actions)
+            self.send_flow_mod(dp, req)
 
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
@@ -149,13 +155,13 @@ class IcmpResponder(app_manager.RyuApp):
     #Determine output port on the basis of mac address table
     def choose_output_port(self, dst_mac, switch_id, offload):  # ,switch ID
         output_port = self.forwarding_table['s'+str(switch_id)]['dst_mac='+str(dst_mac)]
-        if output_port == 1
+        if output_port == 1:
             return output_port
         elif output_port == 2:
         # If offloading is active, push the traffic through the port 3
             if offload == True:
                 return 3
-            else
+            else:
                 return 2
         else:
             return -1    
