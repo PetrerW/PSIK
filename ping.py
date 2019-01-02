@@ -102,9 +102,9 @@ class IcmpResponder(app_manager.RyuApp):
         # out_port = ofproto.OFPP_NONE
         # flags = 0
         
-        req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0, 
+        req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
                                     command=ofp.OFPFC_ADD, idle_timeout=0, 
-                                    hard_timeout=0, priority=32768, 
+                                    hard_timeout=0, priority=32768,
                                     buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
                                     out_group=ofp.OFPG_ANY, flags=0, 
                                     match=match, instructions=inst)
@@ -138,54 +138,58 @@ class IcmpResponder(app_manager.RyuApp):
 
         # if(output_port == -1):
         #     print("Cannot determine the output port for switch: ", switch_id, ", in_port: ", in_port)
-        if(output_port == -1):
+        if output_port == -1:
             print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
         else:
             print("Chosen output port: ", output_port)
 
             #TODO: Insert your match
 
-            # match = ofp_parser.OFPMatch(eth_src=src_mac)
-            # actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
-            # print(actions)
-            # table_id=0
-            # cookie = cookie_mask = 0
+            match = ofp_parser.OFPMatch(eth_src=src_mac)
+            actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
+            print(actions)
+            table_id=0
+            cookie = cookie_mask = 0
             # command = ofp.OFPFC_ADD
             # print(command)
-            # idle_timeout = hard_timeout = 0
-            # priority = 32768
-            # # out_port = ofproto.OFPP_NONE
-            # flags = 0
-            # # req = ofp_parser.OFPFlowMod(
-            # #     dp, match, cookie=0, cookie_mask=0, command, idle_timeout, hard_timeout,
-            # #     priority, msg.buffer_id, output_port, flags, actions)
-            # req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
-            #                 table_id, command,
-            #                 idle_timeout, hard_timeout,
-            #                 priority, msg.buffer_id,
-            #                 ofp.OFPP_ANY, ofp.OFPG_ANY,
-            #                 flags,
-            #                 match,
-            #                 actions)
-            cookie = cookie_mask = 0
-            table_id = 0
             idle_timeout = hard_timeout = 0
             priority = 32768
-            buffer_id = ofp.OFP_NO_BUFFER
-            match = ofp_parser.OFPMatch(in_port=1, eth_dst='ff:ff:ff:ff:ff:ff')
-            actions = [ofp_parser.OFPActionOutput(ofp.OFPP_NORMAL, 0)]
+
             inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
                                                     actions)]
             req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
                                         table_id, ofp.OFPFC_ADD,
                                         idle_timeout, hard_timeout,
-                                        priority, buffer_id,
+                                        priority, msg.buffer_id,
                                         ofp.OFPP_ANY, ofp.OFPG_ANY,
                                         ofp.OFPFF_SEND_FLOW_REM,
                                         match, inst)
-            dp.send_msg(req)
             print(req)
             self.send_flow_mod(dp, req)
+
+            # match = ofp_parser.OFPMatch(actset_output=[ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)])
+            # actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
+            # print(actions)
+            # table_id=0
+            # cookie = cookie_mask = 0
+            # # command = ofp.OFPFC_ADD
+            # # print(command)
+            # idle_timeout = hard_timeout = 0
+            # priority = 32768
+            #
+            # inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+            #                                         actions)]
+            # req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
+            #                             table_id, ofp.OFPFC_ADD,
+            #                             idle_timeout, hard_timeout,
+            #                             priority, msg.buffer_id,
+            #                             ofp.OFPP_ANY, ofp.OFPG_ANY,
+            #                             ofp.OFPFF_SEND_FLOW_REM,
+            #                             match, inst)
+            # print(req)
+            # self.send_flow_mod(dp, req)
+
+
 
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
