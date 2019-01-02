@@ -54,7 +54,7 @@ class IcmpResponder(app_manager.RyuApp):
     #         'dst_mac=00:00:00:00:00:02': 2,
     #     }
     # }
-        forwarding_table = {
+    forwarding_table = {
         's1': {
             # out_port = 2
             'src_mac=00:00:00:00:00:01': 2,
@@ -115,7 +115,6 @@ class IcmpResponder(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
         msg = ev.msg
-        datapath = msg.datapath
         # in_port = msg.in_port
         pkt = packet.Packet(data=msg.data)
         print("packet-in %s" % (pkt,))
@@ -146,18 +145,19 @@ class IcmpResponder(app_manager.RyuApp):
 
             #TODO: Insert your match
 
-            match = ofp_parser.OFPMatch(eth_dst=dst_mac)
+            match = ofp_parser.OFPMatch(eth_src=src_mac)
             actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
 
-            cookie = 0
+            cookie = cookie_mask = 0
             command = ofp.OFPFC_ADD
             idle_timeout = hard_timeout = 0
             priority = 32768
             # out_port = ofproto.OFPP_NONE
             flags = 0
             req = ofp_parser.OFPFlowMod(
-                dp, match, cookie, command, idle_timeout, hard_timeout,
+                dp, match, cookie=0, cookie_mask=0, command, idle_timeout, hard_timeout,
                 priority, msg.buffer_id, output_port, flags, actions)
+            print(req)
             self.send_flow_mod(dp, req)
 
     def send_flow_mod(self, datapath, req):
@@ -173,7 +173,7 @@ class IcmpResponder(app_manager.RyuApp):
 
     #Determine output port on the basis of mac address table
     def choose_output_port(self, mac_addr, switch_id, offload):  # ,switch ID
-        output_port = self.forwarding_table['s'+str(switch_id)]['dst_mac='+str(mac_addr)]
+        output_port = self.forwarding_table['s'+str(switch_id)]['src_mac='+str(mac_addr)]
         if output_port == 1:
             return output_port
         elif output_port == 2:
