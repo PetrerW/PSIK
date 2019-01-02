@@ -147,9 +147,11 @@ class IcmpResponder(app_manager.RyuApp):
 
             match = ofp_parser.OFPMatch(eth_src=src_mac)
             actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
-
+            print(actions)
+            table_id=0
             cookie = cookie_mask = 0
             command = ofp.OFPFC_ADD
+            print(command)
             idle_timeout = hard_timeout = 0
             priority = 32768
             # out_port = ofproto.OFPP_NONE
@@ -158,11 +160,13 @@ class IcmpResponder(app_manager.RyuApp):
             #     dp, match, cookie=0, cookie_mask=0, command, idle_timeout, hard_timeout,
             #     priority, msg.buffer_id, output_port, flags, actions)
             req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
-                            0, command,
+                            table_id, command,
                             idle_timeout, hard_timeout,
                             priority, msg.buffer_id,
                             ofp.OFPP_ANY, ofp.OFPG_ANY,
-                            flags, match, actions)
+                            flags,
+                            match,
+                            actions)
             print(req)
             self.send_flow_mod(dp, req)
 
