@@ -1,0 +1,174 @@
+osm-mano@osm-mano:~/PSIK$ ryu-manager ping.py --verbose
+loading app ping.py
+loading app ryu.controller.ofp_handler
+instantiating app ping.py of IcmpResponder
+instantiating app ryu.controller.ofp_handler of OFPHandler
+BRICK ofp_event
+  PROVIDES EventOFPPacketIn TO {'IcmpResponder': set(['main'])}
+  PROVIDES EventOFPSwitchFeatures TO {'IcmpResponder': set(['config'])}
+  CONSUMES EventOFPPortDescStatsReply
+  CONSUMES EventOFPHello
+  CONSUMES EventOFPErrorMsg
+  CONSUMES EventOFPPortStatus
+  CONSUMES EventOFPEchoRequest
+  CONSUMES EventOFPSwitchFeatures
+  CONSUMES EventOFPEchoReply
+BRICK IcmpResponder
+  CONSUMES EventOFPPacketIn
+  CONSUMES EventOFPSwitchFeatures
+connected socket:<eventlet.greenio.base.GreenSocket object at 0x7f64b3b19cd0> address:('192.168.34.2', 60054)
+hello ev <ryu.controller.ofp_event.EventOFPHello object at 0x7f64b5bd9110>
+move onto config mode
+EVENT ofp_event->IcmpResponder EventOFPSwitchFeatures
+switch features ev version=0x4,msg_type=0x6,msg_len=0x20,xid=0x373d311a,OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=1,n_buffers=256,n_tables=254)
+('Got ofp_event.EventOFPSwitchFeatures: ', OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=1,n_buffers=256,n_tables=254))
+OFPSwitchFeatures received: datapath_id=0x0000000000000001 n_buffers=256 n_tables=254 auxiliary_id=0 capabilities=0x00000047
+move onto main mode
+connected socket:<eventlet.greenio.base.GreenSocket object at 0x7f64b5bd90d0> address:('192.168.34.2', 60055)
+hello ev <ryu.controller.ofp_event.EventOFPHello object at 0x7f64b5bd9550>
+move onto config mode
+EVENT ofp_event->IcmpResponder EventOFPSwitchFeatures
+switch features ev version=0x4,msg_type=0x6,msg_len=0x20,xid=0x412e37ef,OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=2,n_buffers=256,n_tables=254)
+('Got ofp_event.EventOFPSwitchFeatures: ', OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=2,n_buffers=256,n_tables=254))
+OFPSwitchFeatures received: datapath_id=0x0000000000000002 n_buffers=256 n_tables=254 auxiliary_id=0 capabilities=0x00000047
+move onto main mode
+connected socket:<eventlet.greenio.base.GreenSocket object at 0x7f64b5bd9510> address:('192.168.34.2', 60056)
+hello ev <ryu.controller.ofp_event.EventOFPHello object at 0x7f64b5bd9990>
+move onto config mode
+EVENT ofp_event->IcmpResponder EventOFPSwitchFeatures
+switch features ev version=0x4,msg_type=0x6,msg_len=0x20,xid=0x196864b7,OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=3,n_buffers=256,n_tables=254)
+('Got ofp_event.EventOFPSwitchFeatures: ', OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=3,n_buffers=256,n_tables=254))
+OFPSwitchFeatures received: datapath_id=0x0000000000000003 n_buffers=256 n_tables=254 auxiliary_id=0 capabilities=0x00000047
+move onto main mode
+connected socket:<eventlet.greenio.base.GreenSocket object at 0x7f64b5bd9950> address:('192.168.34.2', 60057)
+hello ev <ryu.controller.ofp_event.EventOFPHello object at 0x7f64b5bd9e90>
+move onto config mode
+EVENT ofp_event->IcmpResponder EventOFPSwitchFeatures
+switch features ev version=0x4,msg_type=0x6,msg_len=0x20,xid=0xb92ad5f6,OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=4,n_buffers=256,n_tables=254)
+('Got ofp_event.EventOFPSwitchFeatures: ', OFPSwitchFeatures(auxiliary_id=0,capabilities=71,datapath_id=4,n_buffers=256,n_tables=254))
+OFPSwitchFeatures received: datapath_id=0x0000000000000004 n_buffers=256 n_tables=254 auxiliary_id=0 capabilities=0x00000047
+move onto main mode
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+('Deleting flow: (', 1, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=3,cookie=0,cookie_mask=0,flags=0,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+[OFPActionOutput(len=16,max_len=65535,port=2,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)]
+('Adding flow: (', 1, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=0,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=2,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:01'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+('Old src_mac: ', '00:00:00:00:00:01')
+('New src_mac: ', '00:00:00:00:00:02')
+('Chosen output port: ', 1)
+('New actions: ', [OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)])
+('Adding flow: (', 1, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=0,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:02'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 2: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+('Deleting flow: (', 2, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=3,cookie=0,cookie_mask=0,flags=0,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)]
+('Adding flow: (', 2, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=0,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:02'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+('Old src_mac: ', '00:00:00:00:00:02')
+('New src_mac: ', '00:00:00:00:00:01')
+('Chosen output port: ', 2)
+('New actions: ', [OFPActionOutput(len=16,max_len=65535,port=2,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)])
+('Adding flow: (', 2, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=0,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=2,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:01'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='33:33:00:00:00:16',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::16',ext_hdrs=[hop_opts(data=[option(data='\x00\x00',len_=2,type_=5), option(data=None,len_=0,type_=1)],nxt=58,size=0)],flow_label=0,hop_limit=1,nxt=0,payload_length=36,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=28679,data=mldv2_report(record_num=1,records=[mldv2_report_group(address='ff02::1:ff00:1',aux=None,aux_len=0,num=0,srcs=[],type_=4)]),type_=143)
+Ethertype: 34525
+Packet in from 3: ethernet(dst='33:33:00:00:00:16',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::16',ext_hdrs=[hop_opts(data=[option(data='\x00\x00',len_=2,type_=5), option(data=None,len_=0,type_=1)],nxt=58,size=0)],flow_label=0,hop_limit=1,nxt=0,payload_length=36,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=28679,data=mldv2_report(record_num=1,records=[mldv2_report_group(address='ff02::1:ff00:1',aux=None,aux_len=0,num=0,srcs=[],type_=4)]),type_=143)
+Ethertype: 34525
+('Deleting flow: (', 3, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=3,cookie=0,cookie_mask=0,flags=0,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+[OFPActionOutput(len=16,max_len=65535,port=2,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)]
+('Adding flow: (', 3, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=0,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=2,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:01'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+('Old src_mac: ', '00:00:00:00:00:01')
+('New src_mac: ', '00:00:00:00:00:02')
+('Chosen output port: ', 1)
+('New actions: ', [OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)])
+('Adding flow: (', 3, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=0,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:02'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+Packet in from 3: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+('Counter_s', 3, ' = ', 1)
+Packet in from 2: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+Packet in from 3: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+('Counter_s', 3, ' = ', 2)
+Packet in from 2: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 2: ethernet(dst='33:33:00:00:00:16',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::16',ext_hdrs=[hop_opts(data=[option(data='\x00\x00',len_=2,type_=5), option(data=None,len_=0,type_=1)],nxt=58,size=0)],flow_label=0,hop_limit=1,nxt=0,payload_length=36,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=28677,data=mldv2_report(record_num=1,records=[mldv2_report_group(address='ff02::1:ff00:2',aux=None,aux_len=0,num=0,srcs=[],type_=4)]),type_=143)
+Ethertype: 34525
+Packet in from 1: ethernet(dst='33:33:00:00:00:16',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::16',ext_hdrs=[hop_opts(data=[option(data='\x00\x00',len_=2,type_=5), option(data=None,len_=0,type_=1)],nxt=58,size=0)],flow_label=0,hop_limit=1,nxt=0,payload_length=36,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=28677,data=mldv2_report(record_num=1,records=[mldv2_report_group(address='ff02::1:ff00:2',aux=None,aux_len=0,num=0,srcs=[],type_=4)]),type_=143)
+Ethertype: 34525
+Packet in from 3: ethernet(dst='33:33:00:00:00:16',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::16',ext_hdrs=[hop_opts(data=[option(data='\x00\x00',len_=2,type_=5), option(data=None,len_=0,type_=1)],nxt=58,size=0)],flow_label=0,hop_limit=1,nxt=0,payload_length=36,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=28677,data=mldv2_report(record_num=1,records=[mldv2_report_group(address='ff02::1:ff00:2',aux=None,aux_len=0,num=0,srcs=[],type_=4)]),type_=143)
+Ethertype: 34525
+('Counter_s', 3, ' = ', 3)
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+Packet in from 3: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+('Counter_s', 3, ' = ', 4)
+Packet in from 2: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:01'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:1',traffic_class=0,version=6), icmpv6(code=0,csum=31532,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:01',length=1),res=0),type_=133)
+Ethertype: 34525
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 3: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+('Counter_s', 3, ' = ', 5)
+[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)]
+('Adding flow: (', 1, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=1,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:01'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)]
+('Adding flow: (', 2, ')')
+version=None,msg_type=None,msg_len=None,xid=None,OFPFlowMod(buffer_id=4294967295,command=1,cookie=0,cookie_mask=0,flags=1,hard_timeout=0,idle_timeout=0,instructions=[OFPInstructionActions(actions=[OFPActionOutput(len=16,max_len=65535,port=1,type=0), OFPActionOutput(len=16,max_len=65535,port=4294967293,type=0)],type=4)],match=OFPMatch(oxm_fields={'eth_src': '00:00:00:00:00:02'}),out_group=4294967295,out_port=4294967295,priority=32768,table_id=0)
+('offload = ', True)
+Packet in from 1: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+Packet in from 2: ethernet(dst='33:33:00:00:00:02',ethertype=34525,src='00:00:00:00:00:02'), ipv6(dst='ff02::2',ext_hdrs=[],flow_label=0,hop_limit=255,nxt=58,payload_length=16,src='fe80::200:ff:fe00:2',traffic_class=0,version=6), icmpv6(code=0,csum=31530,data=nd_router_solicit(option=nd_option_sla(data=None,hw_src='00:00:00:00:00:02',length=1),res=0),type_=133)
+Ethertype: 34525
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 3: ethernet(dst='ff:ff:ff:ff:ff:ff',ethertype=2054,src='00:00:00:00:00:01'), arp(dst_ip='10.0.0.2',dst_mac='00:00:00:00:00:00',hlen=6,hwtype=1,opcode=1,plen=4,proto=2048,src_ip='10.0.0.1',src_mac='00:00:00:00:00:01')
+Ethertype: 2054
+('Counter_s', 3, ' = ', 1)
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='ff:ff:ff:ff:ff:ff',ethertype=2054,src='00:00:00:00:00:01'), arp(dst_ip='10.0.0.2',dst_mac='00:00:00:00:00:00',hlen=6,hwtype=1,opcode=1,plen=4,proto=2048,src_ip='10.0.0.1',src_mac='00:00:00:00:00:01')
+Ethertype: 2054
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='ff:ff:ff:ff:ff:ff',ethertype=2054,src='00:00:00:00:00:01'), arp(dst_ip='10.0.0.2',dst_mac='00:00:00:00:00:00',hlen=6,hwtype=1,opcode=1,plen=4,proto=2048,src_ip='10.0.0.1',src_mac='00:00:00:00:00:01')
+Ethertype: 2054
+Packet in from 3: ethernet(dst='ff:ff:ff:ff:ff:ff',ethertype=2054,src='00:00:00:00:00:01'), arp(dst_ip='10.0.0.2',dst_mac='00:00:00:00:00:00',hlen=6,hwtype=1,opcode=1,plen=4,proto=2048,src_ip='10.0.0.1',src_mac='00:00:00:00:00:01')
+Ethertype: 2054
+('Counter_s', 3, ' = ', 2)
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+EVENT ofp_event->IcmpResponder EventOFPPacketIn
+Packet in from 1: ethernet(dst='ff:ff:ff:ff:ff:ff',ethertype=2054,src='00:00:00:00:00:01'), arp(dst_ip='10.0.0.2',dst_mac='00:00:00:00:00:00',hlen=6,hwtype=1,opcode=1,plen=4,proto=2048,src_ip='10.0.0.1',src_mac='00:00:00:00:00:01')
+Ethertype: 2054
+Packet in from 3: ethernet(dst='ff:ff:ff:ff:ff:ff',ethertype=2054,src='00:00:00:00:00:01'), arp(dst_ip='10.0.0.2',dst_mac='00:00:00:00:00:00',hlen=6,hwtype=1,opcode=1,plen=4,proto=2048,src_ip='10.0.0.1',src_mac='00:00:00:00:00:01')
+Ethertype: 2054
+('Counter_s', 3, ' = ', 3)
+
