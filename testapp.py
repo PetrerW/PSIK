@@ -37,7 +37,15 @@ class L2Switch(app_manager.RyuApp):
         # Datapath ID of the switch that has sent the message
         packet_id = msg.buffer_id
         switch_id = msg.datapath.id
-        reason = msg.reason
+    
+        if  msg.reason == ofp.OFPR_NO_MATCH:
+            reason = 'NO MATCH'
+        elif msg.reason == ofp.OFPR_ACTION:
+            reason = 'ACTION'
+        elif msg.reason == ofp.OFPR_INVALID_TTL:
+            reason = 'INVALID TTL'
+        else:
+            reason = 'unknown'
         print("I got a packetIn message (", packet_id, ") from switch: ", switch_id, ". Reason: ", reason, ", Message: \"", msg, "\"")
 
         # Input port of the packet
