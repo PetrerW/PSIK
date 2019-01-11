@@ -1,6 +1,7 @@
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
+from ryu.controller.handler import CONFIG_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_0
 
@@ -84,20 +85,4 @@ class L2Switch(app_manager.RyuApp):
         if switch_id==2:
             return self.forwarding_table['s2']['in_port='+str(in_port)]
 
-    def send_features_request(self, datapath):
-        ofp_parser = datapath.ofproto_parser
-
-        req = ofp_parser.OFPFeaturesRequest(datapath)
-        datapath.send_msg(req)
-
-    @set_ev_cls(ofp_event.EventOFPSwitchFeatures, MAIN_DISPATCHER)
-    def switch_features_handler(self, ev):
-        msg = ev.msg
-
-        self.logger.debug('OFPSwitchFeatures received: '
-                          'datapath_id=0x%016x n_buffers=%d '
-                          'n_tables=%d auxiliary_id=%d '
-                          'capabilities=0x%08x',
-                          msg.datapath_id, msg.n_buffers, msg.n_tables,
-                          msg.auxiliary_id, msg.capabilities)
 
