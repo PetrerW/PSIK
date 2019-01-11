@@ -53,7 +53,7 @@ class L2Switch(app_manager.RyuApp):
             reason = 'unknown'
         print("I got a packetIn message (", packet_id, ") from switch: ", switch_id, ". Reason: ", reason, ", Message: \"", msg, "\"")
 
-        if msg.reason == ofp.OFPR_NO_MATCH:
+        # if msg.reason == ofp.OFPR_NO_MATCH:
         # Input port of the packet
         in_port = msg.in_port
 
