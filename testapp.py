@@ -37,7 +37,8 @@ class L2Switch(app_manager.RyuApp):
         # Datapath ID of the switch that has sent the message
         packet_id = msg.buffer_id
         switch_id = msg.datapath.id
-    
+        ofp = dp.ofproto
+        
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'
         elif msg.reason == ofp.OFPR_ACTION:
