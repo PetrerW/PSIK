@@ -33,61 +33,70 @@ class L2Switch(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
         msg = ev.msg
-        dp = msg.datapath
-
-        # Datapath ID of the switch that has sent the message
-        packet_id = msg.buffer_id
-        switch_id = msg.datapath.id
-        ofp = dp.ofproto
-
-        print("OFPROTO = ", ofp)
-
+        ofp = msg.datapath.ofproto
+        
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'
+            self.choose_fields(msg)        
         elif msg.reason == ofp.OFPR_ACTION:
             reason = 'ACTION'
         elif msg.reason == ofp.OFPR_INVALID_TTL:
             reason = 'INVALID TTL'
         else:
             reason = 'unknown'
-        print("I got a packetIn message (", packet_id, ") from switch: ", switch_id, ". Reason: ", reason, ", Message: \"", msg, "\"")
+        
+        print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason, ", Message: \"", msg, "\"")
 
-        # if msg.reason == ofp.OFPR_NO_MATCH:
+            # # Input port of the packet
+            # in_port = msg.in_port
+
+            # ofp_parser = dp.ofproto_parser
+            # port = self.choose_output_port(in_port, switch_id)
+
+            # print("Chosen output port: ", port)
+
+            # actions = [ofp_parser.OFPActionOutput(port, 65535)]
+            # out = ofp_parser.OFPPacketOut(
+            #     # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
+            #     datapath=dp, buffer_id=packet_id, in_port=in_port, actions=actions)
+            # print(out)
+            # send_flow_mod(dp, 0, packet_id, in_port, port)
+
+    # Choose, which fields to send in send_flow_mod function
+    def choose_fields(self, msg):
+        # Datapath ID of the switch that has sent the message
+        packet_id = msg.buffer_id
+        switch_id = msg.datapath.id
+        dp = msg.datapath
+        ofp = dp.ofproto
         # Input port of the packet
         in_port = msg.in_port
 
-        ofp_parser = dp.ofproto_parser
+        
         port = self.choose_output_port(in_port, switch_id)
-
+        
+        ofp_parser = dp.ofproto_parser
+        
         print("Chosen output port: ", port)
 
+        #TODO: Insert your match
+
+        match = ofp_parser.OFPMatch(in_port=in_port)
         actions = [ofp_parser.OFPActionOutput(port, 65535)]
-        out = ofp_parser.OFPPacketOut(
-             # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
-             datapath=dp, buffer_id=packet_id, in_port=in_port, actions=actions)
-        print(out)
-        dp.send_msg(out)
 
-    def send_flow_mod(self, datapath, table_id, buffer_id, in_port):
-        ofp = datapath.ofproto
-        ofp_parser = datapath.ofproto_parser
-
-        # cookie = cookie_mask = 0
-        # table_id = 0
+        cookie = 0
+        command = ofp.OFPFC_ADD
         idle_timeout = hard_timeout = 0
         priority = 32768
-        # buffer_id = ofp.OFP_NO_BUFFER
-        match = ofp_parser.OFPMatch(in_port=in_port, eth_dst='ff:ff:ff:ff:ff:ff')
-        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_NORMAL, 0)]
-        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-                                                actions)]
-        req = ofp_parser.OFPFlowMod(datapath, cookie, cookie_mask,
-                                    table_id, ofp.OFPFC_ADD,
-                                    idle_timeout, hard_timeout,
-                                    priority, buffer_id,
-                                    ofp.OFPP_ANY, ofp.OFPG_ANY,
-                                    ofp.OFPFF_SEND_FLOW_REM,
-                                    match, inst)
+        buffer_id = packet_id
+        # out_port = ofproto.OFPP_NONE
+        flags = 0
+        req = ofp_parser.OFPFlowMod(
+            dp, match, cookie, command, idle_timeout, hard_timeout,
+            priority, buffer_id, port, flags, actions)
+        self.send_flow_mod(dp, req)
+
+    def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
 
     def choose_output_port(self, in_port, switch_id):  # ,switch ID
