@@ -3,10 +3,10 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import CONFIG_DISPATCHER
 from ryu.controller.handler import set_ev_cls
-from ryu.ofproto import ofproto_v1_0
+from ryu.ofproto import ofproto_v1_0, ofproto_v1_3
 
 class L2Switch(app_manager.RyuApp):
-    OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION]
+    OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
     forwarding_table = {
         's1': {
             # out_port = 2
@@ -40,6 +40,8 @@ class L2Switch(app_manager.RyuApp):
         switch_id = msg.datapath.id
         ofp = dp.ofproto
 
+        print("OFPROTO = ", ofp)
+
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'
         elif msg.reason == ofp.OFPR_ACTION:
@@ -50,10 +52,10 @@ class L2Switch(app_manager.RyuApp):
             reason = 'unknown'
         print("I got a packetIn message (", packet_id, ") from switch: ", switch_id, ". Reason: ", reason, ", Message: \"", msg, "\"")
 
+        if msg.reason == ofp.OFPR_NO_MATCH:
         # Input port of the packet
         in_port = msg.in_port
 
-        ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
         port = self.choose_output_port(in_port, switch_id)
 
@@ -66,28 +68,27 @@ class L2Switch(app_manager.RyuApp):
         print(out)
         dp.send_msg(out)
 
+    def send_flow_mod(self, datapath, table_id, buffer_id, in_port):
+        ofp = datapath.ofproto
+        ofp_parser = datapath.ofproto_parser
 
-    #
-    # @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
-    # def packet_in_handler(self, ev):
-    #     msg = ev.msg
-    #
-    #     # Datapath ID of the switch that has sent the message
-    #     switch_id = msg.buffer_id
-    #
-    #     # Input port of the packet
-    #     in_port = msg.in_port
-    #
-    #     dp = msg.datapath
-    #     ofp = dp.ofproto
-    #     ofp_parser = dp.ofproto_parser
-    #
-    #
-    #     actions = [ofp_parser.OFPActionOutput(1, 65535)]
-    #     out = ofp_parser.OFPPacketOut(
-    #         # datapath=dp, buffer_id=msg.buffer_id, in_port=msg.in_port, actions=actions)
-    #         datapath=dp, buffer_id=switch_id, in_port=in_port, actions=actions)
-    #     dp.send_msg(out)
+        # cookie = cookie_mask = 0
+        # table_id = 0
+        idle_timeout = hard_timeout = 0
+        priority = 32768
+        # buffer_id = ofp.OFP_NO_BUFFER
+        match = ofp_parser.OFPMatch(in_port=in_port, eth_dst='ff:ff:ff:ff:ff:ff')
+        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_NORMAL, 0)]
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                                actions)]
+        req = ofp_parser.OFPFlowMod(datapath, cookie, cookie_mask,
+                                    table_id, ofp.OFPFC_ADD,
+                                    idle_timeout, hard_timeout,
+                                    priority, buffer_id,
+                                    ofp.OFPP_ANY, ofp.OFPG_ANY,
+                                    ofp.OFPFF_SEND_FLOW_REM,
+                                    match, inst)
+        datapath.send_msg(req)
 
     def choose_output_port(self, in_port, switch_id):  # ,switch ID
         if switch_id==1:
