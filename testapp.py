@@ -33,12 +33,13 @@ class L2Switch(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
         msg = ev.msg
+        dp = msg.datapath
 
         # Datapath ID of the switch that has sent the message
         packet_id = msg.buffer_id
         switch_id = msg.datapath.id
         ofp = dp.ofproto
-        
+
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'
         elif msg.reason == ofp.OFPR_ACTION:
@@ -52,7 +53,6 @@ class L2Switch(app_manager.RyuApp):
         # Input port of the packet
         in_port = msg.in_port
 
-        dp = msg.datapath
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
         port = self.choose_output_port(in_port, switch_id)
