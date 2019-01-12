@@ -59,7 +59,8 @@ class IcmpResponder(app_manager.RyuApp):
                                              actions=actions)]
         mod = parser.OFPFlowMod(datapath=datapath,
                                 priority=0,
-                                match=ofproto.ofp_parser.OFPMatch(),
+                                #All the traffic that goes to the interface in_port will be sent to the controller
+                                match=ofproto.ofp_parser.OFPMatch(in_port=msg.in_port),
                                 instructions=inst)
         datapath.send_msg(mod)
 
