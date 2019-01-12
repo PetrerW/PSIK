@@ -44,24 +44,22 @@ class IcmpResponder(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def _switch_features_handler(self, ev):
         msg = ev.msg
-        pkt = packet.Packet(data=msg.data)
-        self.logger.info("packet-in %s" % (pkt,))
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
-        in_port = msg.in_port
+        # in_port = msg.in_port
         switch_id = msg.datapath.id
 
         #Forward the packet futher and send it to the switch
         actions = [parser.OFPActionOutput(port=ofproto.OFPP_CONTROLLER,
-                                          max_len=ofproto.OFPCML_NO_BUFFER), 
-                    parser.OFPActionOutput(port=self.choose_output_port(in_port, switch_id),
                                           max_len=ofproto.OFPCML_NO_BUFFER)]
+                    # parser.OFPActionOutput(port=self.choose_output_port(in_port, switch_id),
+                    #                       max_len=ofproto.OFPCML_NO_BUFFER)]
         inst = [parser.OFPInstructionActions(type_=ofproto.OFPIT_APPLY_ACTIONS,
                                              actions=actions)]
         mod = parser.OFPFlowMod(datapath=datapath,
                                 priority=0,
-                                match=ofproto.ofp_parser.OFPMatch(in_port=in_port),
+                                match=ofproto.ofp_parser.OFPMatch(),
                                 instructions=inst)
         datapath.send_msg(mod)
 
