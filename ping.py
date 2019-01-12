@@ -42,35 +42,24 @@ class IcmpResponder(app_manager.RyuApp):
         #self.ip_addr = '192.0.2.9'
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
-    def _switch_features_handler(self, ev):
+    def switch_features_handler(self, ev):
+    msg = ev.msg
+    
+    self.logger.debug('OFPSwitchFeatures received: '
+                      'datapath_id=0x%016x n_buffers=%d '
+                      'n_tables=%d capabilities=0x%08x ports=%s',
+                      msg.datapath_id, msg.n_buffers, msg.n_tables,
+                      msg.capabilities, msg.ports)
+                      
+    @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
+    def _packet_in_handler(self, ev):
         msg = ev.msg
         datapath = msg.datapath
-        ofproto = datapath.ofproto
-        parser = datapath.ofproto_parser
-        # in_port = msg.in_port
-        switch_id = msg.datapath.id
+        port = msg.match['in_port']
+        pkt = packet.Packet(data=msg.data)
+        self.logger.info("packet-in %s" % (pkt,))
 
-        #Forward the packet futher and send it to the switch
-        actions = [parser.OFPActionOutput(port=ofproto.OFPP_CONTROLLER,
-                                          max_len=65535)]
-                    # parser.OFPActionOutput(port=self.choose_output_port(in_port, switch_id),
-                    #                       max_len=ofproto.OFPCML_NO_BUFFER)]
-        inst = [parser.OFPInstructionActions(type_=ofproto.OFPIT_APPLY_ACTIONS,
-                                             actions=actions)]
-        mod = parser.OFPFlowMod(datapath=datapath,
-                                priority=0,
-                                #All the traffic that goes to the interface in_port will be sent to the controller
-                                match=ofproto.ofp_parser.OFPMatch(in_port=msg.in_port),
-                                instructions=inst)
-        datapath.send_msg(mod)
 
-    # @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
-    # def _packet_in_handler(self, ev):
-    #     msg = ev.msg
-    #     datapath = msg.datapath
-    #     port = msg.match['in_port']
-    #     pkt = packet.Packet(data=msg.data)
-    #     self.logger.info("packet-in %s" % (pkt,))
     #     pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
     #     if not pkt_ethernet:
     #         return
