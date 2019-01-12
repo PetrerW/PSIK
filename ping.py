@@ -38,28 +38,25 @@ class IcmpResponder(app_manager.RyuApp):
     forwarding_table = {
         's1': {
             # out_port = 2
-            'dst_mac=1': 2,
-            'in_port=2': 1,
+            'dst_mac=00:00:00:00:00:01': 1,
+            'dst_mac=00:00:00:00:00:02': 2,
         },
         's2': {
-            'in_port=2': 1,
-            'in_port=1': 2,
+            'dst_mac=00:00:00:00:00:01': 2,
+            'dst_mac=00:00:00:00:00:02': 1,
         },
         's3': {
-            'in_port=1': 2,
-            'in_port=2': 1,
+            'dst_mac=00:00:00:00:00:01': 1,
+            'dst_mac=00:00:00:00:00:02': 2,
         },
         's4': {
-            'in_port=1': 2,
-            'in_port=2': 1,
+            'dst_mac=00:00:00:00:00:01': 1,
+            'dst_mac=00:00:00:00:00:02': 2,
         }
     }
 
-
     def __init__(self, *args, **kwargs):
         super(IcmpResponder, self).__init__(*args, **kwargs)
-        #self.hw_addr = '0a:e4:1c:d1:3e:44'
-        #self.ip_addr = '192.0.2.9'
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -141,71 +138,29 @@ class IcmpResponder(app_manager.RyuApp):
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
 
-    #     pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
-    #     if not pkt_ethernet:
-    #         return
-    #     pkt_arp = pkt.get_protocol(arp.arp)
-    #     if pkt_arp:
-    #         self._handle_arp(datapath, port, pkt_ethernet, pkt_arp)
-    #         return
-    #     pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
-    #     pkt_icmp = pkt.get_protocol(icmp.icmp)
-    #     if pkt_icmp:
-    #         self._handle_icmp(datapath, port, pkt_ethernet, pkt_ipv4, pkt_icmp)
-    #         return
+    # # Determine output port on the basis of input port table
+    # def choose_output_port(self, in_port, switch_id):  # ,switch ID
+    #     output_port = self.forwarding_table['s'+str(switch_id)]['in_port='+str(in_port)]
+    #     if output_port in [1,2]:
+    #         return output_port
+    #     else:
+    #         return -1
 
-    # def _handle_arp(self, datapath, port, pkt_ethernet, pkt_arp):
-    #     if pkt_arp.opcode != arp.ARP_REQUEST:
-    #         return
-    #     pkt = packet.Packet()
-    #     pkt.add_protocol(ethernet.ethernet(ethertype=pkt_ethernet.ethertype,
-    #                                        dst=pkt_ethernet.src,
-    #                                        src=self.hw_addr))
-    #     pkt.add_protocol(arp.arp(opcode=arp.ARP_REPLY,
-    #                              src_mac=self.hw_addr,
-    #                              src_ip=self.ip_addr,
-    #                              dst_mac=pkt_arp.src_mac,
-    #                              dst_ip=pkt_arp.src_ip))
-    #     self._send_packet(datapath, port, pkt)
-
-    # def _handle_icmp(self, datapath, port, pkt_ethernet, pkt_ipv4, pkt_icmp):
-    #     if pkt_icmp.type != icmp.ICMP_ECHO_REQUEST:
-    #         return
-    #     pkt = packet.Packet()
-    #     pkt.add_protocol(ethernet.ethernet(ethertype=pkt_ethernet.ethertype,
-    #                                        dst=pkt_ethernet.src,
-    #                                        src=self.hw_addr))
-    #     pkt.add_protocol(ipv4.ipv4(dst=pkt_ipv4.src,
-    #                                src=self.ip_addr,
-    #                                proto=pkt_ipv4.proto))
-    #     pkt.add_protocol(icmp.icmp(type_=icmp.ICMP_ECHO_REPLY,
-    #                                code=icmp.ICMP_ECHO_REPLY_CODE,
-    #                                csum=0,
-    #                                data=pkt_icmp.data))
-    #     self._send_packet(datapath, port, pkt)
-
-    # def _send_packet(self, datapath, port, pkt):
-    #     ofproto = datapath.ofproto
-    #     parser = datapath.ofproto_parser
-    #     pkt.serialize()
-    #     self.logger.info("packet-out %s" % (pkt,))
-    #     data = pkt.data
-    #     actions = [parser.OFPActionOutput(port=port)]
-    #     out = parser.OFPPacketOut(datapath=datapath,
-    #                               buffer_id=ofproto.OFP_NO_BUFFER,
-    #                               in_port=ofproto.OFPP_CONTROLLER,
-    #                               actions=actions,
-    #                               data=data)
-    #     datapath.send_msg(out)
-
-    def choose_output_port(self, in_port, switch_id):  # ,switch ID
-        output_port = self.forwarding_table['s'+str(switch_id)]['in_port='+str(in_port)]
-        if output_port in [1,2]:
-            return out_port
+    #Determine output port on the basis of mac address table
+    def choose_output_port(self, dst_mac, switch_id, offload):  # ,switch ID
+        output_port = self.forwarding_table['s'+str(switch_id)]['dst_mac='+str(dst_mac)]
+        if output_port == 1
+            return output_port
+        elif output_port == 2:
+        # If offloading is active, push the traffic through the port 3
+            if offload == True:
+                return 3
+            else
+                return 2
         else:
-            return -1
+            return -1    
+
     def get_reason(self, msg, ofp):
-	
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'        
         elif msg.reason == ofp.OFPR_ACTION:
