@@ -14,7 +14,8 @@ from ryu.lib.packet import icmp
 
 
 class IcmpResponder(app_manager.RyuApp):
-    OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
+    OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
+    # OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
     forwarding_table = {
         's1': {
             # out_port = 2
@@ -44,12 +45,13 @@ class IcmpResponder(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         msg = ev.msg
-    
+
         self.logger.debug('OFPSwitchFeatures received: '
-                      'datapath_id=0x%016x n_buffers=%d '
-                      'n_tables=%d capabilities=0x%08x ports=%s',
-                      msg.datapath_id, msg.n_buffers, msg.n_tables,
-                      msg.capabilities, msg.port)
+                        'datapath_id=0x%016x n_buffers=%d '
+                        'n_tables=%d auxiliary_id=%d '
+                        'capabilities=0x%08x',
+                        msg.datapath_id, msg.n_buffers, msg.n_tables,
+                        msg.auxiliary_id, msg.capabilities)
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
