@@ -5,8 +5,8 @@ from ryu.controller.handler import CONFIG_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_0, ofproto_v1_3
 from ryu.lib.packet import packet
-# from ryu.lib.packet import ethernet
-# from ryu.lib.packet import arp
+from ryu.lib.packet import ethernet
+from ryu.lib.packet import arp
 from ryu.lib.packet import ipv4
 from ryu.lib.packet import icmp
 
@@ -39,13 +39,10 @@ class L2Switch(app_manager.RyuApp):
     def packet_in_handler(self, ev):
         msg = ev.msg
         ofp = msg.datapath.ofproto
-        pkt = packet.Packet(data=msg.data)
-        protocol = pkt.get_protocol
-        print protocol
 
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'
-            # self.choose_fields(msg)        
+            self.choose_fields(msg)        
         elif msg.reason == ofp.OFPR_ACTION:
             reason = 'ACTION'
         elif msg.reason == ofp.OFPR_INVALID_TTL:
@@ -78,10 +75,8 @@ class L2Switch(app_manager.RyuApp):
         dp = msg.datapath
         ofp = dp.ofproto
         # Input port of the packet
-        in_port = msg.in_port
-
-        
-        port = self.choose_output_port(in_port, switch_id)
+        in_port = msg.in_port        
+        port =  self.choose_output_port(in_port, switch_id)
         
         ofp_parser = dp.ofproto_parser
         
