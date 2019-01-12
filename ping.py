@@ -35,23 +35,42 @@ class IcmpResponder(app_manager.RyuApp):
     #         'in_port=2': 1,
     #     }
     # }
-    forwarding_table = {
+    # forwarding_table = {
+    #     's1': {
+    #         # out_port = 2
+    #         'dst_mac=00:00:00:00:00:01': 1,
+    #         'dst_mac=00:00:00:00:00:02': 2,
+    #     },
+    #     's2': {
+    #         'dst_mac=00:00:00:00:00:01': 2,
+    #         'dst_mac=00:00:00:00:00:02': 1,
+    #     },
+    #     's3': {
+    #         'dst_mac=00:00:00:00:00:01': 1,
+    #         'dst_mac=00:00:00:00:00:02': 2,
+    #     },
+    #     's4': {
+    #         'dst_mac=00:00:00:00:00:01': 1,
+    #         'dst_mac=00:00:00:00:00:02': 2,
+    #     }
+    # }
+        forwarding_table = {
         's1': {
             # out_port = 2
-            'dst_mac=00:00:00:00:00:01': 1,
-            'dst_mac=00:00:00:00:00:02': 2,
+            'src_mac=00:00:00:00:00:01': 2,
+            'src_mac=00:00:00:00:00:02': 1,
         },
         's2': {
-            'dst_mac=00:00:00:00:00:01': 2,
-            'dst_mac=00:00:00:00:00:02': 1,
+            'src_mac=00:00:00:00:00:01': 1,
+            'src_mac=00:00:00:00:00:02': 2,
         },
         's3': {
-            'dst_mac=00:00:00:00:00:01': 1,
-            'dst_mac=00:00:00:00:00:02': 2,
+            'src_mac=00:00:00:00:00:01': 2,
+            'src_mac=00:00:00:00:00:02': 1,
         },
         's4': {
-            'dst_mac=00:00:00:00:00:01': 1,
-            'dst_mac=00:00:00:00:00:02': 2,
+            'src_mac=00:00:00:00:00:01': 2,
+            'src_mac=00:00:00:00:00:02': 1,
         }
     }
 
@@ -110,10 +129,10 @@ class IcmpResponder(app_manager.RyuApp):
         in_port = ofp_parser.OFPPort.name
         print("in_port: ",str(in_port))
         eth = pkt.get_protocol(ethernet.ethernet)
-        dst_mac = eth.dst
+        src_mac = eth.src
         # output_port = self.choose_output_port(in_port, switch_id)
         # TODO: Decision about offloading
-        output_port = self.choose_output_port(dst_mac, switch_id, False)
+        output_port = self.choose_output_port(src_mac, switch_id, False)
         # reason = self.get_reason(msg, ofp)
         
         # print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason)
@@ -121,7 +140,7 @@ class IcmpResponder(app_manager.RyuApp):
         # if(output_port == -1):
         #     print("Cannot determine the output port for switch: ", switch_id, ", in_port: ", in_port)
         if(output_port == -1):
-            print("Cannot determine the output port for switch: ", switch_id, ", dst_mac: ", dst_mac)
+            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
         else:
             print("Chosen output port: ", output_port)
 
@@ -153,8 +172,8 @@ class IcmpResponder(app_manager.RyuApp):
     #         return -1
 
     #Determine output port on the basis of mac address table
-    def choose_output_port(self, dst_mac, switch_id, offload):  # ,switch ID
-        output_port = self.forwarding_table['s'+str(switch_id)]['dst_mac='+str(dst_mac)]
+    def choose_output_port(self, mac_addr, switch_id, offload):  # ,switch ID
+        output_port = self.forwarding_table['s'+str(switch_id)]['dst_mac='+str(mac_addr)]
         if output_port == 1:
             return output_port
         elif output_port == 2:
