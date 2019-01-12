@@ -25,11 +25,11 @@ class IcmpResponder(app_manager.RyuApp):
             'in_port=2': 1,
             'in_port=1': 2,
         },
-        's12u': {
+        's3': {
             'in_port=1': 2,
             'in_port=2': 1,
         },
-        's12d': {
+        's4': {
             'in_port=1': 2,
             'in_port=2': 1,
         }
