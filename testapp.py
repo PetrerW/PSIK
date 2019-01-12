@@ -39,7 +39,13 @@ class L2Switch(app_manager.RyuApp):
     def packet_in_handler(self, ev):
         msg = ev.msg
         ofp = msg.datapath.ofproto
-
+        pkt = packet.Packet(data=msg.data)
+        self.logger.info("packet-in %s" % (pkt,))
+        pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
+        #If it's not ethernet packet, don't handle it
+        if not pkt_ethernet:
+            return
+        
         if  msg.reason == ofp.OFPR_NO_MATCH:
             reason = 'NO MATCH'
             self.choose_fields(msg)        

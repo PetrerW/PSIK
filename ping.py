@@ -59,6 +59,30 @@ class IcmpResponder(app_manager.RyuApp):
         pkt = packet.Packet(data=msg.data)
         self.logger.info("packet-in %s" % (pkt,))
 
+        switch_id = msg.datapath.id
+        dp = msg.datapath
+        ofp = dp.ofproto
+
+        output_port = self.choose_output_port(in_port, switch_id)
+
+        print("Chosen output port: ", port)
+
+        #TODO: Insert your match
+
+        match = ofp_parser.OFPMatch(in_port=in_port)
+        actions = [ofp_parser.OFPActionOutput(port, 65535)]
+
+        cookie = 0
+        command = ofp.OFPFC_ADD
+        idle_timeout = hard_timeout = 0
+        priority = 32768
+        buffer_id = packet_id
+        # out_port = ofproto.OFPP_NONE
+        flags = 0
+        req = ofp_parser.OFPFlowMod(
+            dp, match, cookie, command, idle_timeout, hard_timeout,
+            priority, buffer_id, port, flags, actions)
+        self.send_flow_mod(dp, req)
 
     #     pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
     #     if not pkt_ethernet:
