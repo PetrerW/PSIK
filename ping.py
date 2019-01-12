@@ -83,6 +83,9 @@ class IcmpResponder(app_manager.RyuApp):
             priority, msg.buffer_id, output_port, flags, actions)
         self.send_flow_mod(dp, req)
 
+    def send_flow_mod(self, datapath, req):
+        datapath.send_msg(req)
+
     #     pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
     #     if not pkt_ethernet:
     #         return
