@@ -150,13 +150,12 @@ class IcmpResponder(app_manager.RyuApp):
     #     datapath.send_msg(out)
 
     def choose_output_port(self, in_port, switch_id):  # ,switch ID
-        if switch_id==1:
-            return self.forwarding_table['s1']['in_port='+str(in_port)]
-        if switch_id==2:
-            return self.forwarding_table['s2']['in_port='+str(in_port)]
+        output_port = self.forwarding_table['s'+str(switch_id)]['in_port='+str(in_port)]
+        if output_port in [1,2]:
+            return out_port
         else:
             return -1
-
+            
     def get_reason(self, msg, ofp):
 	
         if  msg.reason == ofp.OFPR_NO_MATCH:
