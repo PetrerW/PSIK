@@ -43,14 +43,14 @@ class IcmpResponder(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
-    msg = ev.msg
+        msg = ev.msg
     
-    self.logger.debug('OFPSwitchFeatures received: '
+        self.logger.debug('OFPSwitchFeatures received: '
                       'datapath_id=0x%016x n_buffers=%d '
                       'n_tables=%d capabilities=0x%08x ports=%s',
                       msg.datapath_id, msg.n_buffers, msg.n_tables,
                       msg.capabilities, msg.ports)
-                      
+
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         msg = ev.msg
