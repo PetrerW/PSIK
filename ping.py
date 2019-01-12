@@ -62,7 +62,7 @@ class IcmpResponder(app_manager.RyuApp):
         switch_id = msg.datapath.id
         dp = msg.datapath
         ofp = dp.ofproto
-
+        ofp_parser = dp.ofproto_parser
         output_port = self.choose_output_port(in_port, switch_id)
 
         print("Chosen output port: ", output_port)
