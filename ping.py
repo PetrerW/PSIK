@@ -86,13 +86,13 @@ class IcmpResponder(app_manager.RyuApp):
         print("packet-in %s" % (pkt,))
         self.logger.info("packet-in %s" % (pkt,))
 
-        # switch_id = msg.datapath.id
-        # dp = msg.datapath
-        # ofp = dp.ofproto
-        # ofp_parser = dp.ofproto_parser
-        # TODO port_no doesn't exist
-        # in_port = ofp_parser.port_no
-        # print("in_port: ", in_port)
+        switch_id = msg.datapath.id
+        dp = msg.datapath
+        ofp = dp.ofproto
+        ofp_parser = dp.ofproto_parser
+        TODO port_no doesn't exist
+        in_port = ofp_parser.OFPPort.port_no
+        print("in_port: ", in_port)
         # output_port = self.choose_output_port(in_port, switch_id)
         # reason = self.get_reason(msg, ofp)
         
