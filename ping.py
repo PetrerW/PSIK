@@ -52,7 +52,7 @@ class IcmpResponder(app_manager.RyuApp):
 
         #Forward the packet futher and send it to the switch
         actions = [parser.OFPActionOutput(port=ofproto.OFPP_CONTROLLER,
-                                          max_len=ofproto.OFPCML_NO_BUFFER)]
+                                          max_len=65535)]
                     # parser.OFPActionOutput(port=self.choose_output_port(in_port, switch_id),
                     #                       max_len=ofproto.OFPCML_NO_BUFFER)]
         inst = [parser.OFPInstructionActions(type_=ofproto.OFPIT_APPLY_ACTIONS,
