@@ -64,24 +64,30 @@ class IcmpResponder(app_manager.RyuApp):
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
         output_port = self.choose_output_port(in_port, switch_id)
+        reason = self.get_reason(msg)
+        
+        print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason, "
 
-        print("Chosen output port: ", output_port)
+        if(output_port == -1):
+            print("Cannot determine outpu port for switch: ", switch_id, ", in_port: ", in_port)
+        else:
+            print("Chosen output port: ", output_port)
 
-        #TODO: Insert your match
+            #TODO: Insert your match
 
-        match = ofp_parser.OFPMatch(in_port=in_port)
-        actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
+            match = ofp_parser.OFPMatch(in_port=in_port)
+            actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
 
-        cookie = 0
-        command = ofp.OFPFC_ADD
-        idle_timeout = hard_timeout = 0
-        priority = 32768
-        # out_port = ofproto.OFPP_NONE
-        flags = 0
-        req = ofp_parser.OFPFlowMod(
-            dp, match, cookie, command, idle_timeout, hard_timeout,
-            priority, msg.buffer_id, output_port, flags, actions)
-        self.send_flow_mod(dp, req)
+            cookie = 0
+            command = ofp.OFPFC_ADD
+            idle_timeout = hard_timeout = 0
+            priority = 32768
+            # out_port = ofproto.OFPP_NONE
+            flags = 0
+            req = ofp_parser.OFPFlowMod(
+                dp, match, cookie, command, idle_timeout, hard_timeout,
+                priority, msg.buffer_id, output_port, flags, actions)
+            self.send_flow_mod(dp, req)
 
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
@@ -148,3 +154,17 @@ class IcmpResponder(app_manager.RyuApp):
             return self.forwarding_table['s1']['in_port='+str(in_port)]
         if switch_id==2:
             return self.forwarding_table['s2']['in_port='+str(in_port)]
+        else:
+            return -1
+
+    def get_reason(self, msg):
+        if  msg.reason == ofp.OFPR_NO_MATCH:
+            reason = 'NO MATCH'
+            self.choose_fields(msg)        
+        elif msg.reason == ofp.OFPR_ACTION:
+            reason = 'ACTION'
+        elif msg.reason == ofp.OFPR_INVALID_TTL:
+            reason = 'INVALID TTL'
+        else:
+            reason = 'unknown'
+        return reason
