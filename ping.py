@@ -155,7 +155,6 @@ class IcmpResponder(app_manager.RyuApp):
             return out_port
         else:
             return -1
-            
     def get_reason(self, msg, ofp):
 	
         if  msg.reason == ofp.OFPR_NO_MATCH:
