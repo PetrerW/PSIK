@@ -55,7 +55,7 @@ class IcmpResponder(app_manager.RyuApp):
     def _packet_in_handler(self, ev):
         msg = ev.msg
         datapath = msg.datapath
-        port = msg.in_port
+        in_port = msg.in_port
         pkt = packet.Packet(data=msg.data)
         self.logger.info("packet-in %s" % (pkt,))
 
