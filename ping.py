@@ -45,7 +45,7 @@ class IcmpResponder(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         msg = ev.msg
-
+        print("Got ofp_event.EventOFPSwitchFeatures: ", msg)
         self.logger.debug('OFPSwitchFeatures received: '
                         'datapath_id=0x%016x n_buffers=%d '
                         'n_tables=%d auxiliary_id=%d '
