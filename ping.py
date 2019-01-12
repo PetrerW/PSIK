@@ -58,6 +58,24 @@ class IcmpResponder(app_manager.RyuApp):
         ofp_parser = dp.ofproto_parser
         match=ofp_parser.OFPMatch()
         actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                             actions)]
+        # cookie = 0
+        # command = ofp.OFPFC_ADD
+        # idle_timeout = hard_timeout = 0
+        # priority = 32768
+        # out_port = ofproto.OFPP_NONE
+        # flags = 0
+        
+        req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0, 
+                                    command=ofp.OFPFC_ADD, idle_timeout=0, 
+                                    hard_timeout=0, priority=32768, 
+                                    buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
+                                    out_group=ofp.OFPG_ANY, flags=0, 
+                                    match, inst)
+
+        self.send_flow_mod(dp, req)
+
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
