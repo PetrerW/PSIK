@@ -54,6 +54,8 @@ class IcmpResponder(app_manager.RyuApp):
                         msg.auxiliary_id, msg.capabilities)
 
         dp = msg.datapath
+        ofp = dp.ofproto
+        ofp_parser = dp.ofproto_parser
         match=ofp_parser.OFPMatch()
         actions = [ofp_parser.OFPActionOutput(ofp.pc, 65535)]
 
