@@ -57,7 +57,7 @@ class IcmpResponder(app_manager.RyuApp):
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
         match=ofp_parser.OFPMatch()
-        actions = [ofp_parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, 65535)]
+        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
