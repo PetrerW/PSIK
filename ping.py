@@ -72,7 +72,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     hard_timeout=0, priority=32768, 
                                     buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
                                     out_group=ofp.OFPG_ANY, flags=0, 
-                                    match, inst)
+                                    match=match, instructions=inst)
 
         self.send_flow_mod(dp, req)
 
