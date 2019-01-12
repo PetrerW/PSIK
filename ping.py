@@ -76,12 +76,11 @@ class IcmpResponder(app_manager.RyuApp):
         command = ofp.OFPFC_ADD
         idle_timeout = hard_timeout = 0
         priority = 32768
-        buffer_id = packet_id
         # out_port = ofproto.OFPP_NONE
         flags = 0
         req = ofp_parser.OFPFlowMod(
             dp, match, cookie, command, idle_timeout, hard_timeout,
-            priority, buffer_id, port, flags, actions)
+            priority, msg.buffer_id, port, flags, actions)
         self.send_flow_mod(dp, req)
 
     #     pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
