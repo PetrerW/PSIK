@@ -65,12 +65,12 @@ class IcmpResponder(app_manager.RyuApp):
 
         output_port = self.choose_output_port(in_port, switch_id)
 
-        print("Chosen output port: ", port)
+        print("Chosen output port: ", output_port)
 
         #TODO: Insert your match
 
         match = ofp_parser.OFPMatch(in_port=in_port)
-        actions = [ofp_parser.OFPActionOutput(port, 65535)]
+        actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
 
         cookie = 0
         command = ofp.OFPFC_ADD
