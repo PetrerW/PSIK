@@ -53,11 +53,15 @@ class IcmpResponder(app_manager.RyuApp):
                         msg.datapath_id, msg.n_buffers, msg.n_tables,
                         msg.auxiliary_id, msg.capabilities)
 
+        dp = msg.datapath
+        match=ofp_parser.OFPMatch()
+        actions = [ofp_parser.OFPActionOutput(ofp.pc, 65535)]
+
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
-    def _packet_in_handler(self, ev):
+    def packet_in_handler(self, ev):
         msg = ev.msg
         datapath = msg.datapath
-        in_port = msg.in_port
+        # in_port = msg.in_port
         pkt = packet.Packet(data=msg.data)
         print("packet-in %s" % (pkt,))
         self.logger.info("packet-in %s" % (pkt,))
@@ -66,31 +70,33 @@ class IcmpResponder(app_manager.RyuApp):
         dp = msg.datapath
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
-        output_port = self.choose_output_port(in_port, switch_id)
-        reason = self.get_reason(msg, ofp)
+        in_port = ofp_parser.port_no
+        print("in_port: ", in_port)
+        # output_port = self.choose_output_port(in_port, switch_id)
+        # reason = self.get_reason(msg, ofp)
         
-        print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason)
+        # print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason)
 
-        if(output_port == -1):
-            print("Cannot determine the output port for switch: ", switch_id, ", in_port: ", in_port)
-        else:
-            print("Chosen output port: ", output_port)
+        # if(output_port == -1):
+        #     print("Cannot determine the output port for switch: ", switch_id, ", in_port: ", in_port)
+        # else:
+        #     print("Chosen output port: ", output_port)
 
-            #TODO: Insert your match
+        #     #TODO: Insert your match
 
-            match = ofp_parser.OFPMatch(in_port=in_port)
-            actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
+        #     match = ofp_parser.OFPMatch(in_port=in_port)
+        #     actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
 
-            cookie = 0
-            command = ofp.OFPFC_ADD
-            idle_timeout = hard_timeout = 0
-            priority = 32768
-            # out_port = ofproto.OFPP_NONE
-            flags = 0
-            req = ofp_parser.OFPFlowMod(
-                dp, match, cookie, command, idle_timeout, hard_timeout,
-                priority, msg.buffer_id, output_port, flags, actions)
-            self.send_flow_mod(dp, req)
+        #     cookie = 0
+        #     command = ofp.OFPFC_ADD
+        #     idle_timeout = hard_timeout = 0
+        #     priority = 32768
+        #     # out_port = ofproto.OFPP_NONE
+        #     flags = 0
+        #     req = ofp_parser.OFPFlowMod(
+        #         dp, match, cookie, command, idle_timeout, hard_timeout,
+        #         priority, msg.buffer_id, output_port, flags, actions)
+        #     self.send_flow_mod(dp, req)
 
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
