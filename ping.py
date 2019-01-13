@@ -38,8 +38,6 @@ class IcmpResponder(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(IcmpResponder, self).__init__(*args, **kwargs)
-        #Wheter started offloading
-        self._init = True
         #How many packets passed through s3 and s4
         self._counters = {3:0, 4:0}
         #Wheter offloading or not
