@@ -205,7 +205,7 @@ class IcmpResponder(app_manager.RyuApp):
             # print(req)
             # self.send_flow_mod(dp, req)
 
-    def remove_controller_flow(self, dp, ofp_parser)
+    def remove_controller_flow(self, dp, ofp_parser):
         match=ofp_parser.OFPMatch()
         actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
         inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
