@@ -141,7 +141,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     out_group=ofp.OFPG_ANY, flags=0, 
                                     match=match, instructions=inst)
 
-        print("Deleting flow: ("+switch_id+")")
+        print("Deleting flow: ("+str(switch_id)+")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -169,7 +169,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
 
-        print("Adding flow: ("+switch_id+")")
+        print("Adding flow: ("+str(switch_id)+")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -192,7 +192,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
 
-        print("Adding flow: ("+switch_id+")")
+        print("Adding flow: ("+str(switch_id)+")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -219,7 +219,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
 
-        print("Adding flow: ("+switch_id+")")
+        print("Adding flow: ("+str(switch_id)+")")
         print(req)
         self.send_flow_mod(dp, req)
 
