@@ -38,6 +38,12 @@ class IcmpResponder(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(IcmpResponder, self).__init__(*args, **kwargs)
+        #Wheter started offloading
+        self._init = True
+        #How many packets passed through a switch
+        self._counter = 0
+        #Wheter offloading or not
+        self._offload = False
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -80,17 +86,35 @@ class IcmpResponder(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
 
-        # TODO: Decision about offloading
-        output_port = self.choose_output_port(src_mac, switch_id, False)
-        # reason = self.get_reason(msg, ofp)
-        
-        #Succesfully chosen outpu_port
-        if output_port in [1,2,3]:
-            # Remove flow that sends all packets to the controller
-            self.remove_controller_flow(dp, switch_id)
+        if self._init == True:
+            self._init = False
+            self._offload = 0
+            # TODO: Decision about _offloading
+            output_port = self.choose_output_port(src_mac, switch_id, self._offload)
+            # reason = self.get_reason(msg, ofp)
+            
+            #Succesfully chosen outpu_port
+            if output_port in [1,2,3]:
+                # Remove flow that sends all packets to the controller
+                self.remove_controller_flow(dp, switch_id)
 
-            # Add flows with src_mac addresses and sending to the controller
-            self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
+                # Add flows with src_mac addresses and sending to the controller
+                self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
+        else:
+            self._counter = self._counter + 1
+            print("Counter = ", self._counter)
+            if self._counter >= 5:
+                
+                output_port = self.choose_output_port(src_mac, switch_id, self._offload)
+                self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
+                self.modify_flow(dp, 2, '00:00:00:00:00:02', msg.buffer_id, output_port)
+                
+                #Change offloading state
+                if self._offload == True:
+                    self._offload = False
+                else:
+                    self._offload = True
+                print("offload = ", self._offload)
 
     def remove_controller_flow(self, dp, switch_id):
         ofp = dp.ofproto
@@ -162,16 +186,35 @@ class IcmpResponder(app_manager.RyuApp):
         print(req)
         self.send_flow_mod(dp, req)
 
+    def modify_flow(self, dp, switch_id, src_mac, buffer_id, output_port):
+        #OFPFC_MODIFY
+        ofp = dp.ofproto
+        ofp_parser = dp.ofproto_parser
+        match = ofp_parser.OFPMatch(eth_src=src_mac)
+        actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
+                    ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
+        print(actions)
+        table_id=0
+        cookie = cookie_mask = 0
+        idle_timeout = hard_timeout = 0
+        priority = 32768
+
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                                actions)]
+        req = ofp_parser.OFPFlowMod(dp, cookie=cookie, cookie_mask=cookie_mask,
+                                    table_id=table_id, command=ofp.OFPFC_MODIFY,
+                                    idle_timeout=idle_timeout, hard_timeout=hard_timeout,
+                                    priority=priority, buffer_id=buffer_id,
+                                    out_port=ofp.OFPP_ANY, out_group=ofp.OFPG_ANY,
+                                    flags=ofp.OFPFF_SEND_FLOW_REM,
+                                    match=match, instructions=inst)
+
+        print("Adding flow: (", switch_id,")")
+        print(req)
+        self.send_flow_mod(dp, req)
+
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
-
-    # # Determine output port on the basis of input port table
-    # def choose_output_port(self, in_port, switch_id):  # ,switch ID
-    #     output_port = self.forwarding_table['s'+str(switch_id)]['in_port='+str(in_port)]
-    #     if output_port in [1,2]:
-    #         return output_port
-    #     else:
-    #         return -1
 
     #Determine output port on the basis of mac address table
     def choose_output_port(self, mac_addr, switch_id, offload):  # ,switch ID
@@ -186,11 +229,6 @@ class IcmpResponder(app_manager.RyuApp):
                 output_port = 2
         else:
             output_port = -1
-
-        if output_port == -1:
-            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", mac_addr)
-        else:
-            print("Chosen output port: ", output_port)
 
         return output_port
 
