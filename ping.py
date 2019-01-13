@@ -40,12 +40,13 @@ class IcmpResponder(app_manager.RyuApp):
         super(IcmpResponder, self).__init__(*args, **kwargs)
         #Wheter started offloading
         self._init = True
-        #How many packets passed through s1
-        self._counter_s3 = 0
-        #How many packets passed through s2
-        self._counter_s4 = 0
+        #How many packets passed through s3 and s4
+        self._counters = {3:0, 4:0}
         #Wheter offloading or not
         self._offload = False
+        #Wheter all the switches got initial information
+        self._init_table = {1:True, 2:True, 3:True, 4:True}
+
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -88,8 +89,8 @@ class IcmpResponder(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
 
-        if self._init == True:
-            self._init = False
+        if self._init_table[switch_id] == True:
+            self._init_table[switch_id] = False
             self._offload = 0
             # TODO: Decision about _offloading
             output_port = self.choose_output_port(src_mac, switch_id, self._offload)
@@ -102,41 +103,24 @@ class IcmpResponder(app_manager.RyuApp):
 
                 # Add flows with src_mac addresses and sending to the controller
                 self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
+
         else:
-            if switch_id == 3:
-                self._counter_s3 = self._counter_s3 + 1
-                print("Counter_s", switch_id, " = ", self._counter_s3)
-                if self._counter_s3 >= 5:
-                    self._counter_s3 = 0
-                    
-                    output_port = self.choose_output_port(src_mac, switch_id, self._offload)
-                    self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
-                    self.modify_flow(dp, 2, '00:00:00:00:00:02', msg.buffer_id, output_port)
-                    
-                    #Change offloading state
-                    if self._offload == True:
-                        self._offload = False
-                    else:
-                        self._offload = True
-                    print("offload = ", self._offload)
-            if switch_id == 4:
-                self._counter_s4 = self._counter_s4 + 1
-                print("Counter_s", switch_id, " = ", self._counter_s4)
-                if self._counter_s4 >= 5:
-                    self._counter_s4 = 0
-                    
-                    output_port = self.choose_output_port(src_mac, switch_id, self._offload)
-                    self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
-                    self.modify_flow(dp, 2, '00:00:00:00:00:02', msg.buffer_id, output_port)
-                    
-                    #Change offloading state
-                    if self._offload == True:
-                        self._offload = False
-                    else:
-                        self._offload = True
-                    print("offload = ", self._offload)
-
-
+            #Increment counters for the appropriate switch
+            self._counters[switch_id] = self._counters[switch_id] + 1
+            print("Counter_s", switch_id, " = ", self._counters[switch_id])
+            if self._counters[switch_id] >= 5:
+                self._counters[switch_id] = 0
+                
+                output_port = self.choose_output_port(src_mac, switch_id, self._offload)
+                self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
+                self.modify_flow(dp, 2, '00:00:00:00:00:02', msg.buffer_id, output_port)
+                
+                #Change offloading state
+                if self._offload == True:
+                    self._offload = False
+                else:
+                    self._offload = True
+                print("offload = ", self._offload)
 
     def remove_controller_flow(self, dp, switch_id):
         ofp = dp.ofproto
