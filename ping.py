@@ -84,7 +84,7 @@ class IcmpResponder(app_manager.RyuApp):
         dp = msg.datapath
 
         pkt = packet.Packet(data=msg.data)
-        print("packet-in %s" % (pkt,))
+        print("Packet in from "+switch_id+": "+str(pkt))
         # self.logger.info("packet-in %s" % (pkt,))
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
