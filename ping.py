@@ -104,6 +104,7 @@ class IcmpResponder(app_manager.RyuApp):
             self._counter = self._counter + 1
             print("Counter = ", self._counter)
             if self._counter >= 5:
+                self._counter = 0
                 
                 output_port = self.choose_output_port(src_mac, switch_id, self._offload)
                 self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
