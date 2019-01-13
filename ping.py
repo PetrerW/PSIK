@@ -177,21 +177,21 @@ class IcmpResponder(app_manager.RyuApp):
             self.send_flow_mod(dp, req)
             
             #######################################################################
-            # match=ofp_parser.OFPMatch()
-            # actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
-            # inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-            #                                     actions)]
+            match=ofp_parser.OFPMatch()
+            actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
+            inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                                actions)]
             
-            # req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
-            #                             command=ofp.OFPFC_ADD, idle_timeout=0, 
-            #                             hard_timeout=0, priority=32768,
-            #                             buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
-            #                             out_group=ofp.OFPG_ANY, flags=0, 
-            #                             match=match, instructions=inst)
+            req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
+                                        command=ofp.OFPFC_ADD, idle_timeout=0, 
+                                        hard_timeout=0, priority=32768,
+                                        buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
+                                        out_group=ofp.OFPG_ANY, flags=0, 
+                                        match=match, instructions=inst)
 
-            # print("Adding flow: (", switch_id,")")
-            # print(req)
-            # self.send_flow_mod(dp, req)
+            print("Adding flow: (", switch_id,")")
+            print(req)
+            self.send_flow_mod(dp, req)
 
             # match = ofp_parser.OFPMatch(actset_output=[ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)])
             # actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
