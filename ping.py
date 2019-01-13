@@ -46,7 +46,8 @@ class IcmpResponder(app_manager.RyuApp):
         self._offload = False
         #Wheter all the switches got initial information
         self._init_table = {1:True, 2:True, 3:True, 4:True}
-
+        #Datapaths of the switches
+        self.dp_table = {1:None, 2:None, 3:None, 4:None}
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -60,6 +61,11 @@ class IcmpResponder(app_manager.RyuApp):
                         msg.auxiliary_id, msg.capabilities)
 
         dp = msg.datapath
+        switch_id = dp.id
+        
+        if self.dp_table[switch_id] == None:
+            self.dp_table[switch_id]=dp
+        print("Datapaths: "+str(self.dp_table))
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
         match=ofp_parser.OFPMatch()
@@ -117,8 +123,8 @@ class IcmpResponder(app_manager.RyuApp):
                 self._counters[switch_id] = 0
                 print("Counter_s"+str(switch_id)+" = "+str(self._counters[switch_id])+" (reset to zero)")
                 
-                self.change_offload(1, '00:00:00:00:00:01', dp)
-                self.change_offload(2, '00:00:00:00:00:02', dp)
+                self.change_offload(1, '00:00:00:00:00:01')
+                self.change_offload(2, '00:00:00:00:00:02')
                 
                 print("Old offload state = "+str(self._offload))
                 #Change offloading state
@@ -228,10 +234,10 @@ class IcmpResponder(app_manager.RyuApp):
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
 
-    def change_offload(self, switch_id, src_mac, dp):
+    def change_offload(self, switch_id, src_mac):
         output_port = self.choose_output_port(src_mac, switch_id, self._offload)
         self.print_output_port(output_port, switch_id, src_mac)
-        self.modify_flow(dp, switch_id, src_mac, output_port)
+        self.modify_flow(self.dp_table[switch_id], switch_id, src_mac, output_port)
 
     #Determine output port on the basis of mac address table
     def choose_output_port(self, mac_addr, switch_id, offload):  # ,switch ID
