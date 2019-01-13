@@ -57,12 +57,6 @@ class IcmpResponder(app_manager.RyuApp):
         actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
         inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
                                              actions)]
-        # cookie = 0
-        # command = ofp.OFPFC_ADD
-        # idle_timeout = hard_timeout = 0
-        # priority = 32768
-        # out_port = ofproto.OFPP_NONE
-        # flags = 0
         
         req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
                                     command=ofp.OFPFC_ADD, idle_timeout=0, 
@@ -84,119 +78,21 @@ class IcmpResponder(app_manager.RyuApp):
 
         switch_id = msg.datapath.id
         dp = msg.datapath
-        ofp = dp.ofproto
-        ofp_parser = dp.ofproto_parser
+        # ofp = dp.ofproto
+        # ofp_parser = dp.ofproto_parser
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
         # TODO: Decision about offloading
         output_port = self.choose_output_port(src_mac, switch_id, False)
         # reason = self.get_reason(msg, ofp)
         
-        # print("I got a packetIn message (", msg.buffer_id, ") from switch: ", msg.datapath.id, ". Reason: ", reason)
-        
-        if output_port == -1:
-            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
-        else:
-            print("Chosen output port: ", output_port)
-
-            #Remove flow that sends all packets to the controller
+        #Succesfully chosen outpu_port
+        if output_port in [1,2,3]:
+            # Remove flow that sends all packets to the controller
             self.remove_controller_flow(dp, switch_id)
 
-            #######################################################################
-            match = ofp_parser.OFPMatch(eth_src=src_mac)
-            actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
-                        ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
-            print(actions)
-            table_id=0
-            cookie = cookie_mask = 0
-            # command = ofp.OFPFC_ADD
-            # print(command)
-            idle_timeout = hard_timeout = 0
-            priority = 32768
-
-            inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-                                                    actions)]
-            req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
-                                        table_id, ofp.OFPFC_ADD,
-                                        idle_timeout, hard_timeout,
-                                        priority, msg.buffer_id,
-                                        ofp.OFPP_ANY, ofp.OFPG_ANY,
-                                        ofp.OFPFF_SEND_FLOW_REM,
-                                        match, inst)
-            print("Adding flow: (", switch_id,")")
-            print(req)
-            self.send_flow_mod(dp, req)
-
-            #######################################################################
-            print("Old src_mac: ", src_mac)
-            #Swap src_mac addresses
-            if src_mac == '00:00:00:00:00:02':
-                src_mac = '00:00:00:00:00:01'
-            elif src_mac == '00:00:00:00:00:01':
-                src_mac = '00:00:00:00:00:02'
-
-            print("New src_mac: ", src_mac)
-            output_port = self.choose_output_port(src_mac, switch_id, False)
-            if output_port == -1:
-                print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
-            else:
-                print("Chosen output port: ", output_port)
-            match = ofp_parser.OFPMatch(eth_src=src_mac)
-            actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
-                        ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
-            inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-                                                    actions)]
-            print("New actions: ", actions)
-            
-            req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
-                                        table_id, ofp.OFPFC_ADD,
-                                        idle_timeout, hard_timeout,
-                                        priority, msg.buffer_id,
-                                        ofp.OFPP_ANY, ofp.OFPG_ANY,
-                                        ofp.OFPFF_SEND_FLOW_REM,
-                                        match, inst)
-            print("Adding flow: (", switch_id,")")
-            print(req)
-            self.send_flow_mod(dp, req)
-            
-            # #######################################################################
-            # match=ofp_parser.OFPMatch()
-            # actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
-            # inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-            #                                     actions)]
-            
-            # req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
-            #                             command=ofp.OFPFC_ADD, idle_timeout=0, 
-            #                             hard_timeout=0, priority=32768,
-            #                             buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
-            #                             out_group=ofp.OFPG_ANY, flags=0, 
-            #                             match=match, instructions=inst)
-
-            # print("Adding flow: (", switch_id,")")
-            # print(req)
-            # self.send_flow_mod(dp, req)
-
-            # match = ofp_parser.OFPMatch(actset_output=[ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)])
-            # actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
-            # print(actions)
-            # table_id=0
-            # cookie = cookie_mask = 0
-            # # command = ofp.OFPFC_ADD
-            # # print(command)
-            # idle_timeout = hard_timeout = 0
-            # priority = 32768
-            #
-            # inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-            #                                         actions)]
-            # req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
-            #                             table_id, ofp.OFPFC_ADD,
-            #                             idle_timeout, hard_timeout,
-            #                             priority, msg.buffer_id,
-            #                             ofp.OFPP_ANY, ofp.OFPG_ANY,
-            #                             ofp.OFPFF_SEND_FLOW_REM,
-            #                             match, inst)
-            # print(req)
-            # self.send_flow_mod(dp, req)
+            # Add flows with src_mac addresses and sending to the controller
+            self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
 
     def remove_controller_flow(self, dp, switch_id):
         ofp = dp.ofproto
@@ -214,6 +110,66 @@ class IcmpResponder(app_manager.RyuApp):
                                     match=match, instructions=inst)
 
         print("Deleting flow: (", switch_id,")")
+        print(req)
+        self.send_flow_mod(dp, req)
+
+    def add_mac_src_flow(self, dp, switch_id, src_mac, buffer_id, output_port):
+        ofp = dp.ofproto
+        ofp_parser = dp.ofproto_parser
+        match = ofp_parser.OFPMatch(eth_src=src_mac)
+        actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
+                    ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
+        print(actions)
+        table_id=0
+        cookie = cookie_mask = 0
+        # command = ofp.OFPFC_ADD
+        # print(command)
+        idle_timeout = hard_timeout = 0
+        priority = 32768
+
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                                actions)]
+        req = ofp_parser.OFPFlowMod(dp, cookie=cookie, cookie_mask=cookie_mask,
+                                    table_id=table_id, command=ofp.OFPFC_ADD,
+                                    idle_timeout=idle_timeout, hard_timeout=hard_timeout,
+                                    priority=priority, buffer_id=buffer_id,
+                                    out_port=ofp.OFPP_ANY, out_group=ofp.OFPG_ANY,
+                                    flags=ofp.OFPFF_SEND_FLOW_REM,
+                                    match=match, instructions=inst)
+
+        print("Adding flow: (", switch_id,")")
+        print(req)
+        self.send_flow_mod(dp, req)
+
+        #######################################################################
+        print("Old src_mac: ", src_mac)
+        #Swap src_mac addresses
+        if src_mac == '00:00:00:00:00:02':
+            src_mac = '00:00:00:00:00:01'
+        elif src_mac == '00:00:00:00:00:01':
+            src_mac = '00:00:00:00:00:02'
+
+        print("New src_mac: ", src_mac)
+        output_port = self.choose_output_port(src_mac, switch_id, False)
+        if output_port == -1:
+            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
+        else:
+            print("Chosen output port: ", output_port)
+        match = ofp_parser.OFPMatch(eth_src=src_mac)
+        actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
+                    ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                                actions)]
+        print("New actions: ", actions)
+        
+        req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
+                                    table_id, ofp.OFPFC_ADD,
+                                    idle_timeout, hard_timeout,
+                                    priority, msg.buffer_id,
+                                    ofp.OFPP_ANY, ofp.OFPG_ANY,
+                                    ofp.OFPFF_SEND_FLOW_REM,
+                                    match, inst)    
+        print("Adding flow: (", switch_id,")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -236,11 +192,18 @@ class IcmpResponder(app_manager.RyuApp):
         elif output_port == 2:
         # If offloading is active, push the traffic through the port 3
             if offload == True:
-                return 3
+                output_port = 3
             else:
-                return 2
+                output_port = 2
         else:
-            return -1    
+            output_port = -1
+
+        if output_port == -1:
+            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
+        else:
+            print("Chosen output port: ", output_port)
+
+        return output_port
 
     def get_reason(self, msg, ofp):
         if  msg.reason == ofp.OFPR_NO_MATCH:
