@@ -141,6 +141,8 @@ class IcmpResponder(app_manager.RyuApp):
 
         #######################################################################
         src_mac = self.swap_mac(src_mac, switch_id)
+        #TODO: Offload hardcoded
+        output_port = self.choose_output_port(src_mac, switch_id, False)
         match = ofp_parser.OFPMatch(eth_src=src_mac)
         actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
                     ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
