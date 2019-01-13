@@ -184,12 +184,14 @@ class IcmpResponder(app_manager.RyuApp):
             self.send_flow_mod(dp, req)
 
             #######################################################################
+            print("Old src_mac: ", src_mac)
             #Swap src_mac addresses
             if src_mac == '00:00:00:00:00:02':
                 src_mac = '00:00:00:00:00:01'
             elif src_mac == '00:00:00:00:00:01':
                 src_mac = '00:00:00:00:00:02'
 
+            print("New src_mac: ", src_mac)
             output_port = self.choose_output_port(src_mac, switch_id, False)
             if output_port == -1:
                 print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
