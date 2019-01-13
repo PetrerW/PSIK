@@ -79,7 +79,7 @@ class IcmpResponder(app_manager.RyuApp):
         # self.logger.info("packet-in %s" % (pkt,))
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
-        
+
         # TODO: Decision about offloading
         output_port = self.choose_output_port(src_mac, switch_id, False)
         # reason = self.get_reason(msg, ofp)
@@ -186,7 +186,7 @@ class IcmpResponder(app_manager.RyuApp):
             output_port = -1
 
         if output_port == -1:
-            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
+            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", mac_addr)
         else:
             print("Chosen output port: ", output_port)
 
