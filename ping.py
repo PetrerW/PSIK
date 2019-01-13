@@ -117,17 +117,16 @@ class IcmpResponder(app_manager.RyuApp):
                 self._counters[switch_id] = 0
                 print("Counter_s"+str(switch_id)+" = "+str(self._counters[switch_id])+" (reset to zero)")
                 
-                output_port = self.choose_output_port(src_mac, switch_id, self._offload)
-                self.print_output_port(output_port, switch_id, src_mac)
-                self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
-                self.modify_flow(dp, 2, '00:00:00:00:00:02', msg.buffer_id, output_port)
+                self.change_offload(1, '00:00:00:00:00:01', dp)
+                self.change_offload(2, '00:00:00:00:00:02', dp)
                 
+                print("Old offload state = "+str(self._offload))
                 #Change offloading state
                 if self._offload == True:
                     self._offload = False
                 else:
                     self._offload = True
-                print("offload = ", self._offload)
+                print("New offload state = "+str(self._offload))
 
     def remove_controller_flow(self, dp, switch_id):
         ofp = dp.ofproto
@@ -199,7 +198,7 @@ class IcmpResponder(app_manager.RyuApp):
         print(req)
         self.send_flow_mod(dp, req)
 
-    def modify_flow(self, dp, switch_id, src_mac, buffer_id, output_port):
+    def modify_flow(self, dp, switch_id, src_mac, output_port):
         #OFPFC_MODIFY
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
@@ -228,6 +227,11 @@ class IcmpResponder(app_manager.RyuApp):
 
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
+
+    def change_offload(self, switch_id, src_mac, dp):
+        output_port = self.choose_output_port(src_mac, switch_id, self._offload)
+        self.print_output_port(output_port, switch_id, src_mac)
+        self.modify_flow(dp, switch_id, src_mac, output_port)
 
     #Determine output port on the basis of mac address table
     def choose_output_port(self, mac_addr, switch_id, offload):  # ,switch ID
