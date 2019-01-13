@@ -191,6 +191,10 @@ class IcmpResponder(app_manager.RyuApp):
                 src_mac = '00:00:00:00:00:02'
 
             output_port = self.choose_output_port(src_mac, switch_id, False)
+            if output_port == -1:
+                print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
+            else:
+                print("Chosen output port: ", output_port)
             match = ofp_parser.OFPMatch(eth_src=src_mac)
             actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
 
