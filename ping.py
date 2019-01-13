@@ -142,7 +142,7 @@ class IcmpResponder(app_manager.RyuApp):
             print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
         else:
             print("Chosen output port: ", output_port)
-
+            #######################################################################
             match=ofp_parser.OFPMatch()
             actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
             inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
@@ -155,10 +155,11 @@ class IcmpResponder(app_manager.RyuApp):
                                         out_group=ofp.OFPG_ANY, flags=0, 
                                         match=match, instructions=inst)
 
-            print("Deleting flow: ")
+            print("Deleting flow: (", switch_id,")")
             print(req)
             self.send_flow_mod(dp, req)
 
+            #######################################################################
             match = ofp_parser.OFPMatch(eth_src=src_mac)
             actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
             print(actions)
@@ -178,9 +179,33 @@ class IcmpResponder(app_manager.RyuApp):
                                         ofp.OFPP_ANY, ofp.OFPG_ANY,
                                         ofp.OFPFF_SEND_FLOW_REM,
                                         match, inst)
+            print("Adding flow: (", switch_id,")")
             print(req)
             self.send_flow_mod(dp, req)
 
+            #######################################################################
+            #Swap src_mac addresses
+            if src_mac == '00:00:00:00:00:02':
+                src_mac = '00:00:00:00:00:01'
+            elif src_mac == '00:00:00:00:00:01':
+                src_mac = '00:00:00:00:00:02'
+
+            output_port = self.choose_output_port(src_mac, switch_id, False)
+            match = ofp_parser.OFPMatch(eth_src=src_mac)
+            actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
+
+            req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
+                                        table_id, ofp.OFPFC_ADD,
+                                        idle_timeout, hard_timeout,
+                                        priority, msg.buffer_id,
+                                        ofp.OFPP_ANY, ofp.OFPG_ANY,
+                                        ofp.OFPFF_SEND_FLOW_REM,
+                                        match, inst)
+            print("Adding flow: (", switch_id,")")
+            print(req)
+            self.send_flow_mod(dp, req)
+            
+            #######################################################################
             match=ofp_parser.OFPMatch()
             actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
             inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
@@ -192,8 +217,8 @@ class IcmpResponder(app_manager.RyuApp):
                                         buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
                                         out_group=ofp.OFPG_ANY, flags=0, 
                                         match=match, instructions=inst)
-            # xD
-            print("Adding flow: ")
+
+            print("Adding flow: (", switch_id,")")
             print(req)
             self.send_flow_mod(dp, req)
 
