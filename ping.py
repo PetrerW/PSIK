@@ -199,7 +199,8 @@ class IcmpResponder(app_manager.RyuApp):
                 print("Chosen output port: ", output_port)
             match = ofp_parser.OFPMatch(eth_src=src_mac)
             actions = [ofp_parser.OFPActionOutput(output_port, 65535)]
-
+            print("New actions: ", actions)
+            
             req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
                                         table_id, ofp.OFPFC_ADD,
                                         idle_timeout, hard_timeout,
