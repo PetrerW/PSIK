@@ -97,6 +97,7 @@ class IcmpResponder(app_manager.RyuApp):
             # self._offload = 0
             # TODO: Decision about _offloading
             output_port = self.choose_output_port(src_mac, switch_id, self._offload)
+
             # reason = self.get_reason(msg, ofp)
             
             #Succesfully chosen output_port
@@ -107,15 +108,17 @@ class IcmpResponder(app_manager.RyuApp):
                 # Add flows with src_mac addresses and sending to the controller
                 self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
 
-        #TODO: Check if icmp packet or whatever
-        elif switch_id in [3,4] and ethertype in [2054, 0x0800, 0x86DD]:
+        # Count IPv4/6 packets
+        elif switch_id in [3,4] and ethertype in [0x0800, 0x86DD]:
             #Increment counters for the appropriate switch
             self._counters[switch_id] = self._counters[switch_id] + 1
-            print("Counter_s"+str(switch_id)+" = ", self._counters[switch_id])
-            if self._counters[switch_id] >= 100:
+            print("Counter_s"+str(switch_id)+" = "+str(self._counters[switch_id]))
+            if self._counters[switch_id] >= 5:
                 self._counters[switch_id] = 0
+                print("Counter_s"+str(switch_id)+" = "+str(self._counters[switch_id])+" (reset to zero)")
                 
                 output_port = self.choose_output_port(src_mac, switch_id, self._offload)
+                self.print_output_port(output_port, switch_id, src_mac)
                 self.modify_flow(dp, 1, '00:00:00:00:00:01', msg.buffer_id, output_port)
                 self.modify_flow(dp, 2, '00:00:00:00:00:02', msg.buffer_id, output_port)
                 
@@ -214,7 +217,7 @@ class IcmpResponder(app_manager.RyuApp):
         req = ofp_parser.OFPFlowMod(dp, cookie=cookie, cookie_mask=cookie_mask,
                                     table_id=table_id, command=ofp.OFPFC_MODIFY,
                                     idle_timeout=idle_timeout, hard_timeout=hard_timeout,
-                                    priority=priority, buffer_id=buffer_id,
+                                    priority=priority, buffer_id=ofp.OFP_NO_BUFFER,
                                     out_port=ofp.OFPP_ANY, out_group=ofp.OFPG_ANY,
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
@@ -252,11 +255,14 @@ class IcmpResponder(app_manager.RyuApp):
 
         print("New src_mac: ", src_mac)
         output_port = self.choose_output_port(src_mac, switch_id, False)
+        self.print_output_port(output_port, switch_id, src_mac)
+        return src_mac
+
+    def print_output_port(self, output_port, switch_id, src_mac):
         if output_port == -1:
             print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
         else:
             print("Chosen output port: ", output_port)
-        return src_mac
 
     def get_reason(self, msg, ofp):
         if  msg.reason == ofp.OFPR_NO_MATCH:
