@@ -71,17 +71,15 @@ class IcmpResponder(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
         msg = ev.msg
-        # in_port = msg.in_port
-        pkt = packet.Packet(data=msg.data)
-        print("packet-in %s" % (pkt,))
-        self.logger.info("packet-in %s" % (pkt,))
-
         switch_id = msg.datapath.id
         dp = msg.datapath
-        # ofp = dp.ofproto
-        # ofp_parser = dp.ofproto_parser
+
+        pkt = packet.Packet(data=msg.data)
+        print("packet-in %s" % (pkt,))
+        # self.logger.info("packet-in %s" % (pkt,))
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
+        
         # TODO: Decision about offloading
         output_port = self.choose_output_port(src_mac, switch_id, False)
         # reason = self.get_reason(msg, ofp)
@@ -142,19 +140,7 @@ class IcmpResponder(app_manager.RyuApp):
         self.send_flow_mod(dp, req)
 
         #######################################################################
-        print("Old src_mac: ", src_mac)
-        #Swap src_mac addresses
-        if src_mac == '00:00:00:00:00:02':
-            src_mac = '00:00:00:00:00:01'
-        elif src_mac == '00:00:00:00:00:01':
-            src_mac = '00:00:00:00:00:02'
-
-        print("New src_mac: ", src_mac)
-        output_port = self.choose_output_port(src_mac, switch_id, False)
-        if output_port == -1:
-            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
-        else:
-            print("Chosen output port: ", output_port)
+        src_mac = self.swap_mac(src_mac, switch_id)
         match = ofp_parser.OFPMatch(eth_src=src_mac)
         actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
                     ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
@@ -162,13 +148,14 @@ class IcmpResponder(app_manager.RyuApp):
                                                 actions)]
         print("New actions: ", actions)
         
-        req = ofp_parser.OFPFlowMod(dp, cookie, cookie_mask,
-                                    table_id, ofp.OFPFC_ADD,
-                                    idle_timeout, hard_timeout,
-                                    priority, msg.buffer_id,
-                                    ofp.OFPP_ANY, ofp.OFPG_ANY,
-                                    ofp.OFPFF_SEND_FLOW_REM,
-                                    match, inst)    
+        req = ofp_parser.OFPFlowMod(dp, cookie=cookie, cookie_mask=cookie_mask,
+                                    table_id=table_id, command=ofp.OFPFC_ADD,
+                                    idle_timeout=idle_timeout, hard_timeout=hard_timeout,
+                                    priority=priority, buffer_id=buffer_id,
+                                    out_port=ofp.OFPP_ANY, out_group=ofp.OFPG_ANY,
+                                    flags=ofp.OFPFF_SEND_FLOW_REM,
+                                    match=match, instructions=inst)
+
         print("Adding flow: (", switch_id,")")
         print(req)
         self.send_flow_mod(dp, req)
@@ -204,6 +191,22 @@ class IcmpResponder(app_manager.RyuApp):
             print("Chosen output port: ", output_port)
 
         return output_port
+
+    def swap_mac(self, src_mac, switch_id):
+        print("Old src_mac: ", src_mac)
+        #Swap src_mac addresses
+        if src_mac == '00:00:00:00:00:02':
+            src_mac = '00:00:00:00:00:01'
+        elif src_mac == '00:00:00:00:00:01':
+            src_mac = '00:00:00:00:00:02'
+
+        print("New src_mac: ", src_mac)
+        output_port = self.choose_output_port(src_mac, switch_id, False)
+        if output_port == -1:
+            print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
+        else:
+            print("Chosen output port: ", output_port)
+        return src_mac
 
     def get_reason(self, msg, ofp):
         if  msg.reason == ofp.OFPR_NO_MATCH:
