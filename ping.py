@@ -10,7 +10,9 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import arp
 from ryu.lib.packet import ipv4
+from ryu.lib.packet import ipv6
 from ryu.lib.packet import icmp
+from ryu.lib.packet import icmpv6
 
 
 class IcmpResponder(app_manager.RyuApp):
@@ -86,8 +88,11 @@ class IcmpResponder(app_manager.RyuApp):
         # self.logger.info("packet-in %s" % (pkt,))
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
+        ethertype = eth.ethertype
+        #0x0800 ipv4
+        #0x86DD ipv6
 
-        if self._init_table[switch_id] == True:
+        if self._init_table[switch_id] == True and ethertype == 0x0800:
             self._init_table[switch_id] = False
             # self._offload = 0
             # TODO: Decision about _offloading
