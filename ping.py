@@ -100,7 +100,7 @@ class IcmpResponder(app_manager.RyuApp):
             print("Chosen output port: ", output_port)
 
             #Remove flow that sends all packets to the controller
-            self.remove_controller_flow(dp, ofp_parser)
+            self.remove_controller_flow(dp, switch_id)
 
             #######################################################################
             match = ofp_parser.OFPMatch(eth_src=src_mac)
@@ -198,7 +198,9 @@ class IcmpResponder(app_manager.RyuApp):
             # print(req)
             # self.send_flow_mod(dp, req)
 
-    def remove_controller_flow(self, dp, ofp_parser):
+    def remove_controller_flow(self, dp, switch_id):
+        ofp = dp.ofproto
+        ofp_parser = dp.ofproto_parser
         match=ofp_parser.OFPMatch()
         actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
         inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
