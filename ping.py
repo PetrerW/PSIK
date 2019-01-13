@@ -89,7 +89,6 @@ class IcmpResponder(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
         ethertype = eth.ethertype
-        print("Ethertype: "+str(ethertype))
         #0x0800 ipv4
         #0x86DD ipv6
 
@@ -100,7 +99,7 @@ class IcmpResponder(app_manager.RyuApp):
             output_port = self.choose_output_port(src_mac, switch_id, self._offload)
             # reason = self.get_reason(msg, ofp)
             
-            #Succesfully chosen outpu_port
+            #Succesfully chosen output_port
             if output_port in [1,2,3]:
                 # Remove flow that sends all packets to the controller
                 self.remove_controller_flow(dp, switch_id)
@@ -109,11 +108,11 @@ class IcmpResponder(app_manager.RyuApp):
                 self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
 
         #TODO: Check if icmp packet or whatever
-        elif switch_id in [3,4]:
+        elif switch_id in [3,4] and ethertype in [2054, 0x0800, 0x86DD]:
             #Increment counters for the appropriate switch
             self._counters[switch_id] = self._counters[switch_id] + 1
-            print("Counter_s", switch_id, " = ", self._counters[switch_id])
-            if self._counters[switch_id] >= 5:
+            print("Counter_s"+str(switch_id)+" = ", self._counters[switch_id])
+            if self._counters[switch_id] >= 100:
                 self._counters[switch_id] = 0
                 
                 output_port = self.choose_output_port(src_mac, switch_id, self._offload)
@@ -142,7 +141,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     out_group=ofp.OFPG_ANY, flags=0, 
                                     match=match, instructions=inst)
 
-        print("Deleting flow: (", switch_id,")")
+        print("Deleting flow: ("+switch_id+")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -170,7 +169,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
 
-        print("Adding flow: (", switch_id,")")
+        print("Adding flow: ("+switch_id+")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -193,7 +192,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
 
-        print("Adding flow: (", switch_id,")")
+        print("Adding flow: ("+switch_id+")")
         print(req)
         self.send_flow_mod(dp, req)
 
@@ -220,7 +219,7 @@ class IcmpResponder(app_manager.RyuApp):
                                     flags=ofp.OFPFF_SEND_FLOW_REM,
                                     match=match, instructions=inst)
 
-        print("Adding flow: (", switch_id,")")
+        print("Adding flow: ("+switch_id+")")
         print(req)
         self.send_flow_mod(dp, req)
 
