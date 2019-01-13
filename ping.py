@@ -86,8 +86,9 @@ class IcmpResponder(app_manager.RyuApp):
         dp = msg.datapath
         ofp = dp.ofproto
         ofp_parser = dp.ofproto_parser
-        # TODO port_no doesn't exist
-        in_port = ofp_parser.OFPPort.name
+
+
+        # in_port = ofp_parser.OFPPort.name
         print("in_port: ",str(in_port))
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
@@ -104,22 +105,9 @@ class IcmpResponder(app_manager.RyuApp):
             print("Cannot determine the output port for switch: ", switch_id, ", src_mac: ", src_mac)
         else:
             print("Chosen output port: ", output_port)
-            #######################################################################
-            match=ofp_parser.OFPMatch()
-            actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
-            inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
-                                                actions)]
-            
-            req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
-                                        command=ofp.OFPFC_DELETE, idle_timeout=0, 
-                                        hard_timeout=0, priority=32768,
-                                        buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
-                                        out_group=ofp.OFPG_ANY, flags=0, 
-                                        match=match, instructions=inst)
 
-            print("Deleting flow: (", switch_id,")")
-            print(req)
-            self.send_flow_mod(dp, req)
+            #Remove flow that sends all packets to the controller
+            self.remove_controller_flow(dp, ofp_parser)
 
             #######################################################################
             match = ofp_parser.OFPMatch(eth_src=src_mac)
@@ -217,7 +205,22 @@ class IcmpResponder(app_manager.RyuApp):
             # print(req)
             # self.send_flow_mod(dp, req)
 
+    def remove_controller_flow(self, dp, ofp_parser)
+        match=ofp_parser.OFPMatch()
+        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, 65535)]
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                            actions)]
+        
+        req = ofp_parser.OFPFlowMod(dp, cookie=0, cookie_mask=0, table_id=0,
+                                    command=ofp.OFPFC_DELETE, idle_timeout=0, 
+                                    hard_timeout=0, priority=32768,
+                                    buffer_id=ofp.OFP_NO_BUFFER, out_port=ofp.OFPP_ANY, 
+                                    out_group=ofp.OFPG_ANY, flags=0, 
+                                    match=match, instructions=inst)
 
+        print("Deleting flow: (", switch_id,")")
+        print(req)
+        self.send_flow_mod(dp, req)
 
     def send_flow_mod(self, datapath, req):
         datapath.send_msg(req)
