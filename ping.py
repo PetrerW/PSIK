@@ -89,10 +89,11 @@ class IcmpResponder(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
         src_mac = eth.src
         ethertype = eth.ethertype
+        print("Ethertype: "+str(ethertype))
         #0x0800 ipv4
         #0x86DD ipv6
 
-        if self._init_table[switch_id] == True and ethertype == 0x0800:
+        if self._init_table[switch_id] == True:
             self._init_table[switch_id] = False
             # self._offload = 0
             # TODO: Decision about _offloading
