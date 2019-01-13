@@ -16,44 +16,6 @@ from ryu.lib.packet import icmp
 class IcmpResponder(app_manager.RyuApp):
     # OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION, ofproto_v1_3.OFP_VERSION]
-    # forwarding_table = {
-    #     's1': {
-    #         # out_port = 2
-    #         'in_port=1': 2,
-    #         'in_port=2': 1,
-    #     },
-    #     's2': {
-    #         'in_port=2': 1,
-    #         'in_port=1': 2,
-    #     },
-    #     's3': {
-    #         'in_port=1': 2,
-    #         'in_port=2': 1,
-    #     },
-    #     's4': {
-    #         'in_port=1': 2,
-    #         'in_port=2': 1,
-    #     }
-    # }
-    # forwarding_table = {
-    #     's1': {
-    #         # out_port = 2
-    #         'dst_mac=00:00:00:00:00:01': 1,
-    #         'dst_mac=00:00:00:00:00:02': 2,
-    #     },
-    #     's2': {
-    #         'dst_mac=00:00:00:00:00:01': 2,
-    #         'dst_mac=00:00:00:00:00:02': 1,
-    #     },
-    #     's3': {
-    #         'dst_mac=00:00:00:00:00:01': 1,
-    #         'dst_mac=00:00:00:00:00:02': 2,
-    #     },
-    #     's4': {
-    #         'dst_mac=00:00:00:00:00:01': 1,
-    #         'dst_mac=00:00:00:00:00:02': 2,
-    #     }
-    # }
     forwarding_table = {
         's1': {
             # out_port = 2
@@ -61,8 +23,8 @@ class IcmpResponder(app_manager.RyuApp):
             'src_mac=00:00:00:00:00:02': 1,
         },
         's2': {
-            'src_mac=00:00:00:00:00:01': 1,
-            'src_mac=00:00:00:00:00:02': 2,
+            'src_mac=00:00:00:00:00:01': 2,
+            'src_mac=00:00:00:00:00:02': 1,
         },
         's3': {
             'src_mac=00:00:00:00:00:01': 2,
