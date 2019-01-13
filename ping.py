@@ -89,7 +89,7 @@ class IcmpResponder(app_manager.RyuApp):
 
         if self._init_table[switch_id] == True:
             self._init_table[switch_id] = False
-            self._offload = 0
+            # self._offload = 0
             # TODO: Decision about _offloading
             output_port = self.choose_output_port(src_mac, switch_id, self._offload)
             # reason = self.get_reason(msg, ofp)
@@ -102,6 +102,7 @@ class IcmpResponder(app_manager.RyuApp):
                 # Add flows with src_mac addresses and sending to the controller
                 self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
 
+        #TODO: Check if icmp packet or whatever
         elif switch_id in [3,4]:
             #Increment counters for the appropriate switch
             self._counters[switch_id] = self._counters[switch_id] + 1
