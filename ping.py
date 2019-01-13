@@ -102,7 +102,7 @@ class IcmpResponder(app_manager.RyuApp):
                 # Add flows with src_mac addresses and sending to the controller
                 self.add_mac_src_flow(dp, switch_id, src_mac, msg.buffer_id, output_port)
 
-        else:
+        elif switch_id in [3,4]:
             #Increment counters for the appropriate switch
             self._counters[switch_id] = self._counters[switch_id] + 1
             print("Counter_s", switch_id, " = ", self._counters[switch_id])
