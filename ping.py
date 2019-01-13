@@ -35,6 +35,14 @@ class IcmpResponder(app_manager.RyuApp):
         's4': {
             'src_mac=00:00:00:00:00:01': 2,
             'src_mac=00:00:00:00:00:02': 1,
+        },
+        's1_offload': {
+            'src_mac=00:00:00:00:00:01': 3,
+            'src_mac=00:00:00:00:00:02': 1,
+        },
+        's2_offload': {
+            'src_mac=00:00:00:00:00:01': 2,
+            'src_mac=00:00:00:00:00:02': 3,
         }
     }
 
@@ -241,16 +249,15 @@ class IcmpResponder(app_manager.RyuApp):
 
     #Determine output port on the basis of mac address table
     def choose_output_port(self, mac_addr, switch_id, offload):  # ,switch ID
-        output_port = self.forwarding_table['s'+str(switch_id)]['src_mac='+str(mac_addr)]
-        if output_port == 1:
-            return output_port
-        elif output_port == 2:
-        # If offloading is active, push the traffic through the port 3
-            if offload == True:
-                output_port = 3
+        if switch_id in [3,4]:
+            output_port = self.forwarding_table['s'+str(switch_id)]['src_mac='+str(mac_addr)]
+        elif switch_id in [1,2]:
+            if self._offload == False:
+                output_port = self.forwarding_table['s'+str(switch_id)]['src_mac='+str(mac_addr)]
             else:
-                output_port = 2
+                output_port = self.forwarding_table['s'+str(switch_id)+'_offload']['src_mac='+str(mac_addr)]
         else:
+            print("Wrong switch_id: "+str(switch_id))
             output_port = -1
 
         return output_port
