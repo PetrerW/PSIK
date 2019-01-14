@@ -1,0 +1,7 @@
+h1 ip addr add fe80::200:ff:fe00:3/64 dev h1-eth0
+h2 ip addr add fe80::200:ff:fe00:4/64 dev h2-eth0
+h2 ping6 -I h2-eth0 -c 20 fe80::200:ff:fe00:3
+h1 ping6 -I h1-eth0 -c 20 fe80::200:ff:fe00:4
+h2 ping6 -I h2-eth0 -c 20 fe80::200:ff:fe00:1
+h1 ping6 -I h1-eth0 -c 20 fe80::200:ff:fe00:2
+

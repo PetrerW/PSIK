@@ -1,0 +1,11 @@
+Upgrade OVS version:
+https://github.com/mininet/mininet/wiki/Installing-new-version-of-Open-vSwitch
+
+Problems with locales during ovs upgrade:
+
+Code:
+# locale-gen en_US en_US.UTF-8 hu_HU hu_HU.UTF-8
+then
+Code:
+# dpkg-reconfigure locales
+https://ubuntuforums.org/showthread.php?t=1346581
