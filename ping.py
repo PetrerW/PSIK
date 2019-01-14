@@ -109,11 +109,8 @@ class IcmpResponder(app_manager.RyuApp):
         if self._init_table[switch_id] == True:
             self._init_table[switch_id] = False
             # self._offload = 0
-            # TODO: Decision about _offloading
             output_port = self.choose_output_port(src_mac, switch_id, self._offload)
 
-            # reason = self.get_reason(msg, ofp)
-            
             #Succesfully chosen output_port
             if output_port in [1,2,3]:
                 # Remove flow that sends all packets to the controller
@@ -170,8 +167,6 @@ class IcmpResponder(app_manager.RyuApp):
         print(actions)
         table_id=0
         cookie = cookie_mask = 0
-        # command = ofp.OFPFC_ADD
-        # print(command)
         idle_timeout = hard_timeout = 0
         priority = 32768
 
@@ -191,7 +186,6 @@ class IcmpResponder(app_manager.RyuApp):
 
         #######################################################################
         src_mac = self.swap_mac(src_mac, switch_id)
-        #TODO: Offload hardcoded
         output_port = self.choose_output_port(src_mac, switch_id, False)
         match = ofp_parser.OFPMatch(eth_src=src_mac)
         actions = [ofp_parser.OFPActionOutput(output_port, 65535), 
